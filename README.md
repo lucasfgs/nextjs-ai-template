@@ -109,3 +109,10 @@ npm run db:generate
 - Use `env` for configuration and `APP_CONFIG` for product metadata.
 - Prefer Server Components unless client state is required.
 - Preserve the edge-safe auth split when modifying middleware or auth flows.
+
+## How to customize this template
+
+- Set `NEXT_PUBLIC_APP_NAME` and `NEXT_PUBLIC_APP_URL` in `.env.local`.
+- Edit `src/env.ts` when adding or changing environment variables.
+- Update product metadata and shared defaults in `src/lib/constants.ts`.
+- Keep agent-facing instructions in `.agent-platform/` and `CLAUDE.md` in sync.

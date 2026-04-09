@@ -1,6 +1,11 @@
+import type { ReactNode } from 'react'
 import { APP_CONFIG } from '@/lib/constants'
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+type Props = {
+  children: ReactNode
+}
+
+export default function AuthLayout({ children }: Props) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-6">
