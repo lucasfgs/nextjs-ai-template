@@ -11,6 +11,12 @@ export const ROUTES = {
   SETTINGS_SECURITY: '/settings/security',
 } as const
 
+export const APP_CONFIG = {
+  NAME: 'AI Template',
+  DESCRIPTION: 'A production-ready Next.js AI starter template with auth, email, and modular architecture.',
+  URL: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
+} as const
+
 export const AUTH_COOKIE_NAME = 'authjs.session-token'
 
 export const TOKEN_EXPIRY = {

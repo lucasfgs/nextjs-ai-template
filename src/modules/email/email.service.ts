@@ -1,11 +1,12 @@
 import { Resend } from 'resend'
 import { env } from '@/env'
+import { APP_CONFIG } from '@/lib/constants'
 import type { SendEmailOptions, EmailResult } from './types/email.types'
 
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null
 
 const FROM_EMAIL = env.RESEND_FROM_EMAIL ?? 'noreply@example.com'
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'My App'
+const APP_NAME = APP_CONFIG.NAME
 
 export const emailService = {
   async send({ to, subject, react }: SendEmailOptions): Promise<EmailResult> {
