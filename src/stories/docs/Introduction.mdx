@@ -1,0 +1,64 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Documentation/Introduction" />
+
+# Design System
+
+Welcome to the **nextjs-ai-template** design system. This Storybook documents every UI component, design token, and pattern used in the project.
+
+## Overview
+
+This design system is built on three pillars:
+
+- **Radix UI primitives** — unstyled, accessible components that handle keyboard navigation, ARIA attributes, and focus management out of the box.
+- **Tailwind CSS v4** — CSS-first utility framework. All design tokens are CSS custom properties defined in `src/app/globals.css`.
+- **Class Variance Authority (CVA)** — type-safe component variants with full TypeScript autocompletion.
+
+## Getting started
+
+### Running Storybook
+
+```bash
+npm run storybook
+```
+
+Open [http://localhost:6006](http://localhost:6006).
+
+### Adding new components
+
+Use the shadcn/ui CLI to scaffold a new component into `src/components/ui/`:
+
+```bash
+npx shadcn add <component-name>
+```
+
+The `components.json` at the project root is pre-configured for this project's directory structure and Tailwind v4 CSS variables.
+
+### Importing components
+
+All components are re-exported from the barrel:
+
+```tsx
+import { Button, Badge, Card } from '@/components/ui'
+```
+
+Or import directly from the component file:
+
+```tsx
+import { Button } from '@/components/ui/button'
+```
+
+## Design tokens
+
+All visual properties are CSS custom properties. See the **Design Tokens** page for the full palette, plus instructions on how to override them for white-labelling.
+
+## Theming
+
+The dark/light mode toggle in the Storybook toolbar (☀ / 🌙) applies `class="dark"` to the preview `<html>` element — exactly how `next-themes` works in the real application.
+
+## Component conventions
+
+- Every component accepts a `className` prop for one-off overrides.
+- Interactive components use `forwardRef` so they integrate with React Hook Form.
+- Compound components (Card, Dialog, etc.) are exported as named exports from one file.
+- Icon-only buttons: use `size="icon"` and wrap the icon with `<span className="sr-only">` for accessibility.

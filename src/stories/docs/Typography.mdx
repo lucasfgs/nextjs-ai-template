@@ -1,0 +1,64 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Documentation/Typography" />
+
+# Typography
+
+## Font families
+
+<div style={{ marginBottom: '32px' }}>
+  <p style={{ fontFamily: 'var(--font-geist-sans, sans-serif)', fontSize: '16px', marginBottom: '4px' }}>
+    <strong>Geist Sans</strong> — the primary UI font. Used for body text, headings, labels, and all interactive elements.
+  </p>
+  <p style={{ fontFamily: 'var(--font-geist-mono, monospace)', fontSize: '14px', color: 'var(--muted-foreground)' }}>
+    Geist Mono — used for code snippets, technical strings, and monospaced data.
+  </p>
+</div>
+
+## Heading scale
+
+<div style={{ fontFamily: 'var(--font-geist-sans, sans-serif)' }}>
+  <div style={{ fontSize: '36px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '12px' }}>H1 — 36px / 700 / tracking-tight</div>
+  <div style={{ fontSize: '30px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '12px' }}>H2 — 30px / 700 / tracking-tight</div>
+  <div style={{ fontSize: '24px', fontWeight: 600, lineHeight: 1.25, marginBottom: '12px' }}>H3 — 24px / 600</div>
+  <div style={{ fontSize: '20px', fontWeight: 600, lineHeight: 1.35, marginBottom: '12px' }}>H4 — 20px / 600</div>
+  <div style={{ fontSize: '16px', fontWeight: 600, lineHeight: 1.5, marginBottom: '12px' }}>H5 — 16px / 600</div>
+  <div style={{ fontSize: '14px', fontWeight: 600, lineHeight: 1.5, marginBottom: '12px' }}>H6 — 14px / 600</div>
+</div>
+
+## Body scale
+
+<div style={{ fontFamily: 'var(--font-geist-sans, sans-serif)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+  <div>
+    <span style={{ fontSize: '18px', lineHeight: '28px' }}>Large — 18px / line-height 28px</span>
+    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-lg</span>
+  </div>
+  <div>
+    <span style={{ fontSize: '16px', lineHeight: '24px' }}>Base — 16px / line-height 24px</span>
+    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-base</span>
+  </div>
+  <div>
+    <span style={{ fontSize: '14px', lineHeight: '20px' }}>Small — 14px / line-height 20px</span>
+    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-sm</span>
+  </div>
+  <div>
+    <span style={{ fontSize: '12px', lineHeight: '16px' }}>Extra small — 12px / line-height 16px</span>
+    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-xs</span>
+  </div>
+</div>
+
+## Colour usage
+
+| Purpose | Class | Token |
+|---------|-------|-------|
+| Primary text | `text-foreground` | `--foreground` |
+| Secondary text | `text-muted-foreground` | `--muted-foreground` |
+| Destructive text | `text-destructive` | `--destructive` |
+
+## Usage guidelines
+
+- **H1 / H2** — page titles and major section headers only.
+- **H3 / H4** — card titles, modal headings, sidebar sections.
+- **Body base** — default running text.
+- **Body small** — metadata, captions, helper text.
+- **Monospace** — code blocks, IDs, hashes. Apply `font-mono`.

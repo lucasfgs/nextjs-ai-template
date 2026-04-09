@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm show:*)"
+      "Bash(npm show:*)",
+      "Bash(SKIP_ENV_VALIDATION=true npx tsc:*)",
+      "Bash(xargs sed:*)",
+      "Bash(SKIP_ENV_VALIDATION=true npm run:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

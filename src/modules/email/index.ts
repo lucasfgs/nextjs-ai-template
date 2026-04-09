@@ -1,0 +1,5 @@
+export { emailService } from './email.service'
+export { VerifyEmailTemplate } from './templates/verify-email'
+export { ResetPasswordTemplate } from './templates/reset-password'
+export { WelcomeTemplate } from './templates/welcome'
+export type { SendEmailOptions, EmailResult } from './types/email.types'
