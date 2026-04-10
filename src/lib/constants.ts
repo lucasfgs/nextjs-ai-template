@@ -1,3 +1,5 @@
+import { env } from '@/env'
+
 export const ROUTES = {
   HOME: '/',
   SIGN_IN: '/sign-in',
@@ -9,6 +11,15 @@ export const ROUTES = {
   SETTINGS: '/settings',
   SETTINGS_PROFILE: '/settings/profile',
   SETTINGS_SECURITY: '/settings/security',
+} as const
+
+const DEFAULT_APP_DESCRIPTION =
+  'A production-ready Next.js AI starter template with auth, email, and modular architecture.'
+
+export const APP_CONFIG = {
+  NAME: env.NEXT_PUBLIC_APP_NAME,
+  DESCRIPTION: DEFAULT_APP_DESCRIPTION,
+  URL: env.NEXT_PUBLIC_APP_URL,
 } as const
 
 export const AUTH_COOKIE_NAME = 'authjs.session-token'

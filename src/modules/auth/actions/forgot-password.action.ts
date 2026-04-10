@@ -2,7 +2,8 @@
 
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
-import { TOKEN_EXPIRY } from '@/lib/constants'
+import { TOKEN_EXPIRY, ROUTES } from '@/lib/constants'
+import { emailService, ResetPasswordTemplate } from '@/modules/email'
 import { forgotPasswordSchema } from '../schemas/auth.schemas'
 import type { ActionState } from '../types/auth.types'
 
@@ -20,13 +21,11 @@ export async function forgotPasswordAction(
 
   const { email } = parsed.data
 
-  // Always return success to prevent email enumeration
   const user = await prisma.user.findUnique({ where: { email } })
   if (!user) {
     return { success: 'If an account exists, a reset link has been sent.' }
   }
 
-  // Invalidate existing tokens
   await prisma.verificationToken.deleteMany({
     where: { userId: user.id, type: 'PASSWORD_RESET' },
   })
@@ -42,8 +41,15 @@ export async function forgotPasswordAction(
     },
   })
 
-  // TODO: Send email via email module
-  // await sendPasswordResetEmail({ email, token })
+  const emailResult = await emailService.send({
+    to: email,
+    subject: 'Reset your password',
+    react: ResetPasswordTemplate({ name: user.name ?? undefined, token }),
+  })
+
+  if (emailResult.error) {
+    return { error: emailResult.error }
+  }
 
   return { success: 'If an account exists, a reset link has been sent.' }
 }

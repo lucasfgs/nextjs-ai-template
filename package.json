@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "jest --watch",
+    "test": "jest",
     "test:ci": "jest --coverage --passWithNoTests",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

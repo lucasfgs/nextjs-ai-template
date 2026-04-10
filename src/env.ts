@@ -15,7 +15,7 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
-    NEXT_PUBLIC_APP_NAME: z.string().default('My App'),
+    NEXT_PUBLIC_APP_NAME: z.string().min(1).default('AI Template'),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,

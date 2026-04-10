@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/common/theme-toggle'
 import { UserAvatar } from '@/modules/auth'
+import { APP_CONFIG, ROUTES } from '@/lib/constants'
 
 export function Header() {
   return (
     <header className="bg-background/95 sticky top-0 z-40 flex h-14 items-center border-b px-4 backdrop-blur-sm">
       <div className="flex flex-1 items-center gap-4">
-        <Link href="/dashboard" className="text-sm font-semibold">
-          {process.env.NEXT_PUBLIC_APP_NAME ?? 'My App'}
+        <Link href={ROUTES.DASHBOARD} className="text-sm font-semibold">
+          {APP_CONFIG.NAME}
         </Link>
       </div>
 

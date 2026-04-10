@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Providers } from '@/providers'
+import { APP_CONFIG } from '@/lib/constants'
 import './globals.css'
 
 const geistSans = Geist({
@@ -14,11 +15,12 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_CONFIG.URL),
   title: {
-    default: process.env.NEXT_PUBLIC_APP_NAME ?? 'My App',
-    template: `%s | ${process.env.NEXT_PUBLIC_APP_NAME ?? 'My App'}`,
+    default: APP_CONFIG.NAME,
+    template: `%s | ${APP_CONFIG.NAME}`,
   },
-  description: 'A production-ready Next.js starter template',
+  description: APP_CONFIG.DESCRIPTION,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
