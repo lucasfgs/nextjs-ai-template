@@ -16,3 +16,17 @@ export type SubscriptionStatusType =
   | 'unpaid'
 
 export type StripeCheckoutMode = 'payment' | 'subscription'
+
+export type BillingCatalogItem = {
+  id: string
+  name: string
+  description: string | null
+  type: BillingCatalogType
+  active: boolean
+  stripeProductId: string | null
+  stripePriceId: string | null
+  currency: string
+  unitAmount: number
+  recurringInterval: string | null
+  recurringIntervalCount: number | null
+}

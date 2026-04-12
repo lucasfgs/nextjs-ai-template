@@ -16,3 +16,8 @@ export function getStripeClient() {
 
   return stripeClient
 }
+
+export function getAppUrl(path = '') {
+  const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')
+  return path ? `${baseUrl}${path.startsWith('/') ? path : `/${path}`}` : baseUrl
+}
