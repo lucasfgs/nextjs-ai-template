@@ -15,6 +15,7 @@ model User {
   password          String?
   role              Role               @default(USER)
   stripeCustomerId  String?            @unique
+  billingStatus     BillingStatus      @default(FREE)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
@@ -22,8 +23,52 @@ model User {
   sessions           Session[]
   verificationTokens VerificationToken[]
   subscriptions      Subscription[]
+  payments           Payment[]
+  catalogItems       BillingCatalogItem[]
 
   @@map("users")
+}
+
+model BillingCatalogItem {
+  id                   String              @id @default(cuid())
+  name                 String
+  description          String?
+  type                 BillingCatalogType
+  active               Boolean             @default(true)
+  currency             String              @default("usd")
+  unitAmount           Int
+  recurringInterval    BillingInterval?
+  recurringIntervalCount Int?
+  stripeProductId      String?             @unique
+  stripePriceId        String?             @unique
+  metadata             Json?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  subscriptions       Subscription[]
+  payments            Payment[]
+
+  @@index([type, active])
+  @@map("billing_catalog_items")
+}
+
+model Payment {
+  id                   String         @id @default(cuid())
+  userId               String
+  catalogItemId        String
+  stripePaymentIntentId String        @unique
+  status               PaymentStatus  @default(PENDING)
+  amount               Int
+  currency             String
+  metadata             Json?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  catalogItem BillingCatalogItem @relation(fields: [catalogItemId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status])
+  @@map("payments")
 }
 
 model Account {
@@ -72,6 +117,7 @@ model VerificationToken {
 model Subscription {
   id                   String              @id @default(cuid())
   userId               String
+  catalogItemId        String?
   stripeSubscriptionId String              @unique
   stripePriceId        String?
   stripeProductId      String?
@@ -88,6 +134,7 @@ model Subscription {
   updatedAt            DateTime            @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  catalogItem BillingCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([status])
@@ -117,4 +164,31 @@ enum SubscriptionStatus {
   PAST_DUE
   CANCELED
   UNPAID
+}
+
+enum BillingCatalogType {
+  ONE_TIME
+  SUBSCRIPTION
+}
+
+enum BillingInterval {
+  day
+  week
+  month
+  year
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
+enum BillingStatus {
+  FREE
+  ACTIVE
+  PAST_DUE
+  CANCELED
 }
