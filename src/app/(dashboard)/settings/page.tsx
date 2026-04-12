@@ -32,6 +32,16 @@ export default function SettingsPage() {
           </div>
           <span className="text-muted-foreground">›</span>
         </Link>
+        <Link
+          href="/settings/billing"
+          className="hover:bg-accent flex items-center justify-between rounded-lg border p-4 transition-colors"
+        >
+          <div>
+            <p className="font-medium">Billing</p>
+            <p className="text-muted-foreground text-sm">Manage your subscription and payment method</p>
+          </div>
+          <span className="text-muted-foreground">›</span>
+        </Link>
       </div>
     </div>
   )
