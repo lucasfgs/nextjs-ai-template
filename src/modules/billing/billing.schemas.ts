@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const billingPlanSchema = z.enum(['free', 'premium', 'pro'])
 
 export const createCheckoutSessionSchema = z.object({
-  plan: billingPlanSchema,
+  plan: billingPlanSchema.exclude(['free']),
 })
 
 export const billingPortalSchema = z.object({})
@@ -16,4 +16,4 @@ export const stripeWebhookEventSchema = z.object({
   }),
 })
 
-export type BillingPlanInput = z.infer<typeof billingPlanSchema>
+export type BillingPlanInput = z.infer<typeof createCheckoutSessionSchema>['plan']

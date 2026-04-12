@@ -22,6 +22,12 @@ export default async function BillingSettingsPage() {
           <div key={plan.id} className="rounded-lg border p-4">
             <h2 className="font-semibold">{plan.name}</h2>
             <p className="text-muted-foreground text-sm">{plan.description}</p>
+            <form action="/api/stripe/checkout" method="post" className="mt-4">
+              <input type="hidden" name="plan" value={plan.id} />
+              <button type="submit" className="rounded-md border px-4 py-2 text-sm font-medium">
+                Start {plan.name}
+              </button>
+            </form>
           </div>
         ))}
       </div>
@@ -30,6 +36,11 @@ export default async function BillingSettingsPage() {
         <p className="text-muted-foreground text-sm">
           {subscription?.status ? `Status: ${subscription.status}` : 'No active subscription'}
         </p>
+        <form action="/api/stripe/portal" method="post" className="mt-4">
+          <button type="submit" className="rounded-md border px-4 py-2 text-sm font-medium">
+            Open billing portal
+          </button>
+        </form>
       </div>
     </div>
   )
