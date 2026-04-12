@@ -2,8 +2,7 @@ import Stripe from 'stripe'
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { env } from '@/env'
-import { billingService } from '@/modules/billing'
-import { getStripeClient } from '@/modules/billing'
+import { billingService, getStripeClient } from '@/modules/billing'
 
 export async function POST(req: Request) {
   try {
@@ -24,9 +23,7 @@ export async function POST(req: Request) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted':
-        await billingService.syncCheckoutCompleted({
-          ...((event.data.object as unknown) as Stripe.Checkout.Session),
-        })
+        await billingService.syncSubscriptionEvent(event.data.object as Stripe.Subscription)
         break
       default:
         break

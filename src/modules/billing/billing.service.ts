@@ -1,7 +1,7 @@
-import { prisma } from '@/lib/prisma'
 import { env } from '@/env'
-import { getStripeClient, getStripePriceId } from './stripe'
+import { prisma } from '@/lib/prisma'
 import type { BillingPlanInput } from './billing.schemas'
+import { getStripeClient, getStripePriceId } from './stripe'
 import type Stripe from 'stripe'
 
 function mapStripeSubscriptionStatus(status: Stripe.Subscription.Status) {
@@ -26,6 +26,59 @@ function mapPriceIdToPlan(priceId?: string | null) {
   if (priceId === env.STRIPE_PREMIUM_PRICE_ID) return 'PREMIUM'
   if (priceId === env.STRIPE_PRO_PRICE_ID) return 'PRO'
   return 'FREE'
+}
+
+async function syncStripeSubscription(subscription: Stripe.Subscription, userId?: string, customerId?: string | null) {
+  const stripe = getStripeClient()
+  const expandedSubscription = await stripe.subscriptions.retrieve(subscription.id, {
+    expand: ['items.data.price.product'],
+  })
+  const price = expandedSubscription.items.data[0]?.price
+  const resolvedUserId = userId ?? expandedSubscription.metadata?.userId
+  if (!resolvedUserId) return
+
+  await prisma.$transaction([
+    customerId
+      ? prisma.user.update({ where: { id: resolvedUserId }, data: { stripeCustomerId: customerId } })
+      : prisma.user.update({
+          where: { id: resolvedUserId },
+          data: { stripeCustomerId: expandedSubscription.customer as string },
+        }),
+    prisma.subscription.upsert({
+      where: { stripeSubscriptionId: expandedSubscription.id },
+      create: {
+        userId: resolvedUserId,
+        stripeSubscriptionId: expandedSubscription.id,
+        stripePriceId: price?.id ?? null,
+        stripeProductId:
+          typeof price?.product === 'string' ? price.product : price?.product?.id ?? null,
+        plan: mapPriceIdToPlan(price?.id),
+        status: mapStripeSubscriptionStatus(expandedSubscription.status),
+        currentPeriodStart: new Date(expandedSubscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(expandedSubscription.current_period_end * 1000),
+        cancelAtPeriodEnd: expandedSubscription.cancel_at_period_end,
+        canceledAt: expandedSubscription.canceled_at ? new Date(expandedSubscription.canceled_at * 1000) : null,
+        trialStart: expandedSubscription.trial_start ? new Date(expandedSubscription.trial_start * 1000) : null,
+        trialEnd: expandedSubscription.trial_end ? new Date(expandedSubscription.trial_end * 1000) : null,
+        metadata: expandedSubscription.metadata,
+      },
+      update: {
+        userId: resolvedUserId,
+        stripePriceId: price?.id ?? null,
+        stripeProductId:
+          typeof price?.product === 'string' ? price.product : price?.product?.id ?? null,
+        plan: mapPriceIdToPlan(price?.id),
+        status: mapStripeSubscriptionStatus(expandedSubscription.status),
+        currentPeriodStart: new Date(expandedSubscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(expandedSubscription.current_period_end * 1000),
+        cancelAtPeriodEnd: expandedSubscription.cancel_at_period_end,
+        canceledAt: expandedSubscription.canceled_at ? new Date(expandedSubscription.canceled_at * 1000) : null,
+        trialStart: expandedSubscription.trial_start ? new Date(expandedSubscription.trial_start * 1000) : null,
+        trialEnd: expandedSubscription.trial_end ? new Date(expandedSubscription.trial_end * 1000) : null,
+        metadata: expandedSubscription.metadata,
+      },
+    }),
+  ])
 }
 
 export const billingService = {
@@ -69,22 +122,21 @@ export const billingService = {
   },
 
   async syncCheckoutCompleted(session: Stripe.Checkout.Session) {
-    const stripe = getStripeClient()
-    const userId = session.metadata?.userId
-    const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
     const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
-    if (!userId || !subscriptionId || !customerId) return
+    const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
+    if (!session.metadata?.userId || !customerId || !subscriptionId) return
 
+    const stripe = getStripeClient()
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ['items.data.price.product'],
     })
 
     await prisma.$transaction([
-      prisma.user.update({ where: { id: userId }, data: { stripeCustomerId: customerId } }),
+      prisma.user.update({ where: { id: session.metadata.userId }, data: { stripeCustomerId: customerId } }),
       prisma.subscription.upsert({
         where: { stripeSubscriptionId: subscription.id },
         create: {
-          userId,
+          userId: session.metadata.userId,
           stripeSubscriptionId: subscription.id,
           stripePriceId: subscription.items.data[0]?.price.id ?? null,
           stripeProductId:
@@ -102,7 +154,7 @@ export const billingService = {
           metadata: subscription.metadata,
         },
         update: {
-          userId,
+          userId: session.metadata.userId,
           stripePriceId: subscription.items.data[0]?.price.id ?? null,
           stripeProductId:
             typeof subscription.items.data[0]?.price.product === 'string'
@@ -120,5 +172,9 @@ export const billingService = {
         },
       }),
     ])
+  },
+
+  async syncSubscriptionEvent(subscription: Stripe.Subscription) {
+    await syncStripeSubscription(subscription, subscription.metadata?.userId, typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id)
   },
 }
