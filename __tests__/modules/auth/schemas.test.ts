@@ -1,4 +1,6 @@
-import { signInSchema, signUpSchema, forgotPasswordSchema } from '@/modules/auth'
+jest.mock('@/modules/auth', () => jest.requireActual('@/modules/auth/schemas/auth.schemas'))
+
+import { forgotPasswordSchema, getAuthSchemas, signInSchema, signUpSchema } from '@/modules/auth'
 
 describe('signInSchema', () => {
   it('accepts valid credentials', () => {
@@ -37,6 +39,23 @@ describe('signUpSchema', () => {
   it('rejects weak password', () => {
     const result = signUpSchema.safeParse({ ...valid, password: 'weak', confirmPassword: 'weak' })
     expect(result.success).toBe(false)
+  })
+
+  it('returns localized validation messages', () => {
+    const { signUpSchema: portugueseSignUpSchema } = getAuthSchemas('pt')
+    const result = portugueseSignUpSchema.safeParse({
+      ...valid,
+      password: 'weak',
+      confirmPassword: 'weak',
+    })
+
+    expect(result.success).toBe(false)
+
+    if (result.success) {
+      throw new Error('Expected schema parsing to fail for weak password input')
+    }
+
+    expect(result.error.issues[0]?.message).toBe('A senha deve ter pelo menos 8 caracteres')
   })
 })
 

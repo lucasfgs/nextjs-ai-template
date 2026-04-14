@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { Providers } from '@/providers'
 import { APP_CONFIG } from '@/lib/constants'
+import { getRequestI18n } from '@/modules/i18n'
+import { Providers } from '@/providers'
 import './globals.css'
 
 const geistSans = Geist({
@@ -14,24 +15,32 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  metadataBase: new URL(APP_CONFIG.URL),
-  title: {
-    default: APP_CONFIG.NAME,
-    template: `%s | ${APP_CONFIG.NAME}`,
-  },
-  description: APP_CONFIG.DESCRIPTION,
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages } = await getRequestI18n()
+
+  return {
+    metadataBase: new URL(APP_CONFIG.URL),
+    title: {
+      default: APP_CONFIG.NAME,
+      template: `%s | ${APP_CONFIG.NAME}`,
+    },
+    description: messages.app.description,
+  }
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { locale, messages } = await getRequestI18n()
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <Providers locale={locale} messages={messages}>
+          {children}
+        </Providers>
       </body>
     </html>
   )

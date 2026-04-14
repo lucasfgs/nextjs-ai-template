@@ -1,9 +1,12 @@
 import Link from 'next/link'
 import { getSettingsNavigationItems } from '@/config/navigation'
-import { templateContent } from '../template-content'
+import { getLocalizedPathname, getRequestI18n } from '@/modules/i18n'
+import { getTemplateContent } from '../template-content'
 
-export function TemplateSettingsOverview() {
-  const settingsItems = getSettingsNavigationItems()
+export async function TemplateSettingsOverview() {
+  const { locale } = await getRequestI18n()
+  const templateContent = getTemplateContent(locale)
+  const settingsItems = getSettingsNavigationItems(locale)
 
   return (
     <div className="space-y-6">
@@ -16,7 +19,7 @@ export function TemplateSettingsOverview() {
         {settingsItems.map((item) => (
           <Link
             key={item.href}
-            href={item.href}
+            href={getLocalizedPathname(locale, item.href)}
             className="hover:bg-accent flex items-center justify-between rounded-lg border p-4 transition-colors"
           >
             <div>

@@ -1,19 +1,24 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import Link from 'next/link'
+import { ROUTES } from '@/lib/constants'
+import { getLocalizedPathname } from '@/modules/i18n'
+import { useI18n } from '@/providers/i18n-provider'
 import { resetPasswordAction } from '../actions/reset-password.action'
 
 function SubmitButton() {
+  const { messages } = useI18n()
   const { pending } = useFormStatus()
+
   return (
     <button
       type="submit"
       disabled={pending}
       className="bg-foreground text-background w-full rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {pending ? 'Resetting…' : 'Reset password'}
+      {pending ? messages.auth.forms.resetting : messages.auth.forms.resetPassword}
     </button>
   )
 }
@@ -23,6 +28,7 @@ interface ResetPasswordFormProps {
 }
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+  const { locale, messages } = useI18n()
   const [state, action] = useActionState(resetPasswordAction, {})
 
   if (state.success) {
@@ -31,8 +37,11 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <div className="rounded-md bg-green-50 px-4 py-4 text-sm text-green-800 dark:bg-green-950 dark:text-green-200">
           {state.success}
         </div>
-        <Link href="/sign-in" className="block text-center text-sm underline underline-offset-4">
-          Sign in
+        <Link
+          href={getLocalizedPathname(locale, ROUTES.SIGN_IN)}
+          className="block text-center text-sm underline underline-offset-4"
+        >
+          {messages.common.signIn}
         </Link>
       </div>
     )
@@ -50,7 +59,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
       <div className="space-y-1">
         <label htmlFor="password" className="text-sm font-medium">
-          New password
+          {messages.auth.forms.newPassword}
         </label>
         <input
           id="password"
@@ -64,7 +73,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
       <div className="space-y-1">
         <label htmlFor="confirmPassword" className="text-sm font-medium">
-          Confirm new password
+          {messages.auth.forms.confirmNewPassword}
         </label>
         <input
           id="confirmPassword"

@@ -1,4 +1,5 @@
 import { ROUTES } from '@/lib/constants'
+import { getMessages, stripLocaleFromPathname, type Locale } from '@/modules/i18n'
 
 export type DashboardPageContext = {
   routePrefix: string
@@ -7,51 +8,55 @@ export type DashboardPageContext = {
   description: string
 }
 
-const dashboardPageContexts: DashboardPageContext[] = [
-  {
-    routePrefix: ROUTES.SETTINGS_BILLING,
-    eyebrow: 'Settings',
-    title: 'Billing',
-    description: 'Manage your plan, subscription status, and payment access.',
-  },
-  {
-    routePrefix: ROUTES.SETTINGS_PROFILE,
-    eyebrow: 'Settings',
-    title: 'Profile',
-    description: 'Update your personal details and keep your workspace polished.',
-  },
-  {
-    routePrefix: ROUTES.SETTINGS_SECURITY,
-    eyebrow: 'Settings',
-    title: 'Security',
-    description: 'Review the latest account protections and upcoming security tools.',
-  },
-  {
-    routePrefix: ROUTES.SETTINGS,
-    eyebrow: 'Settings',
-    title: 'Account settings',
-    description: 'Jump into profile, billing, and security controls from one place.',
-  },
-  {
+export function getDashboardPageContext(pathname: string, locale: Locale) {
+  const messages = getMessages(locale)
+  const normalizedPathname = stripLocaleFromPathname(pathname)
+
+  const dashboardPageContexts: DashboardPageContext[] = [
+    {
+      routePrefix: ROUTES.SETTINGS_BILLING,
+      eyebrow: messages.pageContext.billing.eyebrow,
+      title: messages.pageContext.billing.title,
+      description: messages.pageContext.billing.description,
+    },
+    {
+      routePrefix: ROUTES.SETTINGS_PROFILE,
+      eyebrow: messages.pageContext.profile.eyebrow,
+      title: messages.pageContext.profile.title,
+      description: messages.pageContext.profile.description,
+    },
+    {
+      routePrefix: ROUTES.SETTINGS_SECURITY,
+      eyebrow: messages.pageContext.security.eyebrow,
+      title: messages.pageContext.security.title,
+      description: messages.pageContext.security.description,
+    },
+    {
+      routePrefix: ROUTES.SETTINGS,
+      eyebrow: messages.pageContext.settings.eyebrow,
+      title: messages.pageContext.settings.title,
+      description: messages.pageContext.settings.description,
+    },
+    {
+      routePrefix: ROUTES.DASHBOARD,
+      eyebrow: messages.pageContext.dashboard.eyebrow,
+      title: messages.pageContext.dashboard.title,
+      description: messages.pageContext.dashboard.description,
+    },
+  ]
+
+  const defaultDashboardPageContext: DashboardPageContext = {
     routePrefix: ROUTES.DASHBOARD,
-    eyebrow: 'Overview',
-    title: 'Dashboard',
-    description: 'See your account readiness, recent milestones, and suggested next steps.',
-  },
-]
+    eyebrow: messages.pageContext.dashboard.eyebrow,
+    title: messages.pageContext.dashboard.title,
+    description: messages.pageContext.dashboard.description,
+  }
 
-const defaultDashboardPageContext: DashboardPageContext = {
-  routePrefix: ROUTES.DASHBOARD,
-  eyebrow: 'Overview',
-  title: 'Dashboard',
-  description: 'See your account readiness, recent milestones, and suggested next steps.',
-}
-
-export function getDashboardPageContext(pathname: string) {
   return (
     dashboardPageContexts.find(
       (context) =>
-        pathname === context.routePrefix || pathname.startsWith(`${context.routePrefix}/`),
+        normalizedPathname === context.routePrefix ||
+        normalizedPathname.startsWith(`${context.routePrefix}/`),
     ) ?? defaultDashboardPageContext
   )
 }

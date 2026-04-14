@@ -1,14 +1,20 @@
 import type { Metadata } from 'next'
-import { pageMetadata } from '@/config/page-metadata'
+import { getPageMetadata } from '@/config/page-metadata'
+import { getRequestI18n, getRequestLocale } from '@/modules/i18n'
 import { SignUpForm } from '@/modules/auth'
 
-export const metadata: Metadata = pageMetadata.signUp
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  return getPageMetadata(locale).signUp
+}
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  const { messages } = await getRequestI18n()
+
   return (
     <div className="space-y-2">
-      <h2 className="text-xl font-semibold">Create an account</h2>
-      <p className="text-muted-foreground text-sm">Start your journey today</p>
+      <h2 className="text-xl font-semibold">{messages.auth.pages.signUp.title}</h2>
+      <p className="text-muted-foreground text-sm">{messages.auth.pages.signUp.description}</p>
       <div className="pt-2">
         <SignUpForm />
       </div>

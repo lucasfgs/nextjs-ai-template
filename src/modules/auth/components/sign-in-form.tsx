@@ -1,36 +1,41 @@
 'use client'
 
-import { useActionState } from 'react'
-import { useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useFormStatus } from 'react-dom'
+import { ROUTES } from '@/lib/constants'
+import { getLocalizedPathname } from '@/modules/i18n'
+import { useI18n } from '@/providers/i18n-provider'
 import { signInAction } from '../actions/sign-in.action'
 import { OAuthButtons } from './oauth-buttons'
 
 function SubmitButton() {
+  const { messages } = useI18n()
   const { pending } = useFormStatus()
+
   return (
     <button
       type="submit"
       disabled={pending}
       className="bg-foreground text-background w-full rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {pending ? 'Signing in…' : 'Sign in'}
+      {pending ? messages.auth.forms.signingIn : messages.common.signIn}
     </button>
   )
 }
 
 export function SignInForm() {
   const router = useRouter()
+  const { locale, messages } = useI18n()
   const [state, action] = useActionState(signInAction, {})
 
   useEffect(() => {
     if (state.success) {
-      router.push('/dashboard')
+      router.push(getLocalizedPathname(locale, ROUTES.DASHBOARD))
       router.refresh()
     }
-  }, [state.success, router])
+  }, [locale, router, state.success])
 
   return (
     <div className="space-y-6">
@@ -41,7 +46,9 @@ export function SignInForm() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background text-muted-foreground px-2">Or continue with</span>
+          <span className="bg-background text-muted-foreground px-2">
+            {messages.auth.forms.orContinueWith}
+          </span>
         </div>
       </div>
 
@@ -54,7 +61,7 @@ export function SignInForm() {
 
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium">
-            Email
+            {messages.common.email}
           </label>
           <input
             id="email"
@@ -69,10 +76,13 @@ export function SignInForm() {
         <div className="space-y-1">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="text-sm font-medium">
-              Password
+              {messages.common.password}
             </label>
-            <Link href="/forgot-password" className="text-muted-foreground text-xs hover:underline">
-              Forgot password?
+            <Link
+              href={getLocalizedPathname(locale, ROUTES.FORGOT_PASSWORD)}
+              className="text-muted-foreground text-xs hover:underline"
+            >
+              {messages.auth.forms.forgotPassword}
             </Link>
           </div>
           <input
@@ -89,9 +99,12 @@ export function SignInForm() {
       </form>
 
       <p className="text-muted-foreground text-center text-sm">
-        Don&apos;t have an account?{' '}
-        <Link href="/sign-up" className="font-medium underline underline-offset-4">
-          Sign up
+        {messages.auth.forms.dontHaveAccount}{' '}
+        <Link
+          href={getLocalizedPathname(locale, ROUTES.SIGN_UP)}
+          className="font-medium underline underline-offset-4"
+        >
+          {messages.common.signUp}
         </Link>
       </p>
     </div>

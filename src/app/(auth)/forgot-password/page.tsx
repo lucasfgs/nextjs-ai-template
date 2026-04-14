@@ -1,15 +1,21 @@
 import type { Metadata } from 'next'
-import { pageMetadata } from '@/config/page-metadata'
+import { getPageMetadata } from '@/config/page-metadata'
+import { getRequestI18n, getRequestLocale } from '@/modules/i18n'
 import { ForgotPasswordForm } from '@/modules/auth'
 
-export const metadata: Metadata = pageMetadata.forgotPassword
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  return getPageMetadata(locale).forgotPassword
+}
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  const { messages } = await getRequestI18n()
+
   return (
     <div className="space-y-2">
-      <h2 className="text-xl font-semibold">Forgot password?</h2>
+      <h2 className="text-xl font-semibold">{messages.auth.pages.forgotPassword.title}</h2>
       <p className="text-muted-foreground text-sm">
-        Enter your email and we&apos;ll send you a reset link
+        {messages.auth.pages.forgotPassword.description}
       </p>
       <div className="pt-2">
         <ForgotPasswordForm />

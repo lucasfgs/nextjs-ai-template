@@ -1,21 +1,24 @@
 'use server'
 
 import { AuthError } from 'next-auth'
+import { getRequestI18n } from '@/modules/i18n'
 import { signIn } from '../auth'
-import { signInSchema } from '../schemas/auth.schemas'
+import { getAuthSchemas } from '../schemas/auth.schemas'
 import type { ActionState } from '../types/auth.types'
 
 export async function signInAction(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const { locale, messages } = await getRequestI18n()
+  const { signInSchema } = getAuthSchemas(locale)
   const parsed = signInSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
   })
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+    return { error: parsed.error.issues[0]?.message ?? messages.validation.invalidInput }
   }
 
   try {
@@ -25,14 +28,14 @@ export async function signInAction(
       redirect: false,
     })
 
-    return { success: 'Signed in successfully' }
+    return { success: messages.auth.actions.signedInSuccessfully }
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
-          return { error: 'Invalid email or password' }
+          return { error: messages.auth.actions.invalidEmailOrPassword }
         default:
-          return { error: 'Something went wrong. Please try again.' }
+          return { error: messages.auth.actions.somethingWentWrong }
       }
     }
     throw error

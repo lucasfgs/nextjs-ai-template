@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { CreditCard, LayoutDashboard, Settings, ShieldCheck, User } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
+import { getMessages, type Locale, stripLocaleFromPathname } from '@/modules/i18n'
 
 export type DashboardNavItem = {
   href: string
@@ -11,61 +12,72 @@ export type DashboardNavItem = {
 }
 
 export type DashboardNavSection = {
+  key: 'overview' | 'account'
   label: string
   items: DashboardNavItem[]
 }
 
-export const dashboardNavSections: DashboardNavSection[] = [
-  {
-    label: 'Overview',
-    items: [
-      {
-        href: ROUTES.DASHBOARD,
-        label: 'Dashboard',
-        description: 'See your account pulse and recommended next steps.',
-        icon: LayoutDashboard,
-      },
-    ],
-  },
-  {
-    label: 'Account',
-    items: [
-      {
-        href: ROUTES.SETTINGS,
-        label: 'Settings',
-        description: 'View your account sections and overall preferences.',
-        icon: Settings,
-        exact: true,
-      },
-      {
-        href: ROUTES.SETTINGS_PROFILE,
-        label: 'Profile',
-        description: 'Update your name, avatar, and personal details.',
-        icon: User,
-      },
-      {
-        href: ROUTES.SETTINGS_SECURITY,
-        label: 'Security',
-        description: 'Track password and account protection updates.',
-        icon: ShieldCheck,
-      },
-      {
-        href: ROUTES.SETTINGS_BILLING,
-        label: 'Billing',
-        description: 'Manage plans, subscriptions, and payment access.',
-        icon: CreditCard,
-      },
-    ],
-  },
-]
+export function getDashboardNavSections(locale: Locale): DashboardNavSection[] {
+  const messages = getMessages(locale)
 
-export const dashboardMobileNavItems = dashboardNavSections.flatMap((section) => section.items)
+  return [
+    {
+      key: 'overview',
+      label: messages.navigation.sections.overview,
+      items: [
+        {
+          href: ROUTES.DASHBOARD,
+          label: messages.navigation.items.dashboard.label,
+          description: messages.navigation.items.dashboard.description,
+          icon: LayoutDashboard,
+        },
+      ],
+    },
+    {
+      key: 'account',
+      label: messages.navigation.sections.account,
+      items: [
+        {
+          href: ROUTES.SETTINGS,
+          label: messages.navigation.items.settings.label,
+          description: messages.navigation.items.settings.description,
+          icon: Settings,
+          exact: true,
+        },
+        {
+          href: ROUTES.SETTINGS_PROFILE,
+          label: messages.navigation.items.profile.label,
+          description: messages.navigation.items.profile.description,
+          icon: User,
+        },
+        {
+          href: ROUTES.SETTINGS_SECURITY,
+          label: messages.navigation.items.security.label,
+          description: messages.navigation.items.security.description,
+          icon: ShieldCheck,
+        },
+        {
+          href: ROUTES.SETTINGS_BILLING,
+          label: messages.navigation.items.billing.label,
+          description: messages.navigation.items.billing.description,
+          icon: CreditCard,
+        },
+      ],
+    },
+  ]
+}
 
-export function getSettingsNavigationItems() {
-  return dashboardNavSections.find((section) => section.label === 'Account')?.items ?? []
+export function getDashboardMobileNavItems(locale: Locale) {
+  return getDashboardNavSections(locale).flatMap((section) => section.items)
+}
+
+export function getSettingsNavigationItems(locale: Locale) {
+  return getDashboardNavSections(locale).find((section) => section.key === 'account')?.items ?? []
 }
 
 export function isActiveDashboardPath(pathname: string, item: DashboardNavItem) {
-  if (item.exact) return pathname === item.href
-  return pathname === item.href || pathname.startsWith(item.href + '/')
+  const normalizedPathname = stripLocaleFromPathname(pathname)
+
+  if (item.exact) return normalizedPathname === item.href
+  return normalizedPathname === item.href || normalizedPathname.startsWith(item.href + '/')
 }

@@ -1,16 +1,23 @@
 import { z } from 'zod'
+import { getMessages, type Locale } from '@/modules/i18n'
 
-export const emailSchema = z.string().email('Invalid email address')
+export function getValidationSchemas(locale: Locale = 'en') {
+  const messages = getMessages(locale)
 
-export const passwordSchema = z
-  .string()
-  .min(8, 'Password must be at least 8 characters')
-  .max(100, 'Password must be less than 100 characters')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number')
+  return {
+    emailSchema: z.string().email(messages.validation.invalidEmailAddress),
+    passwordSchema: z
+      .string()
+      .min(8, messages.validation.passwordMinLength)
+      .max(100, messages.validation.passwordMaxLength)
+      .regex(/[A-Z]/, messages.validation.passwordUppercase)
+      .regex(/[0-9]/, messages.validation.passwordNumber),
+    nameSchema: z
+      .string()
+      .min(2, messages.validation.nameMinLength)
+      .max(100, messages.validation.nameMaxLength)
+      .trim(),
+  }
+}
 
-export const nameSchema = z
-  .string()
-  .min(2, 'Name must be at least 2 characters')
-  .max(100, 'Name must be less than 100 characters')
-  .trim()
+export const { emailSchema, passwordSchema, nameSchema } = getValidationSchemas()

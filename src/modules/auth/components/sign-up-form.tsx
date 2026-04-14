@@ -1,25 +1,31 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import Link from 'next/link'
+import { ROUTES } from '@/lib/constants'
+import { getLocalizedPathname } from '@/modules/i18n'
+import { useI18n } from '@/providers/i18n-provider'
 import { signUpAction } from '../actions/sign-up.action'
 import { OAuthButtons } from './oauth-buttons'
 
 function SubmitButton() {
+  const { messages } = useI18n()
   const { pending } = useFormStatus()
+
   return (
     <button
       type="submit"
       disabled={pending}
       className="bg-foreground text-background w-full rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {pending ? 'Creating account…' : 'Create account'}
+      {pending ? messages.auth.forms.creatingAccount : messages.auth.forms.createAccount}
     </button>
   )
 }
 
 export function SignUpForm() {
+  const { locale, messages } = useI18n()
   const [state, action] = useActionState(signUpAction, {})
 
   if (state.success) {
@@ -39,7 +45,9 @@ export function SignUpForm() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background text-muted-foreground px-2">Or continue with</span>
+          <span className="bg-background text-muted-foreground px-2">
+            {messages.auth.forms.orContinueWith}
+          </span>
         </div>
       </div>
 
@@ -52,7 +60,7 @@ export function SignUpForm() {
 
         <div className="space-y-1">
           <label htmlFor="name" className="text-sm font-medium">
-            Full name
+            {messages.common.fullName}
           </label>
           <input
             id="name"
@@ -66,7 +74,7 @@ export function SignUpForm() {
 
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium">
-            Email
+            {messages.common.email}
           </label>
           <input
             id="email"
@@ -80,7 +88,7 @@ export function SignUpForm() {
 
         <div className="space-y-1">
           <label htmlFor="password" className="text-sm font-medium">
-            Password
+            {messages.common.password}
           </label>
           <input
             id="password"
@@ -90,14 +98,12 @@ export function SignUpForm() {
             required
             className="bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2"
           />
-          <p className="text-muted-foreground text-xs">
-            Min 8 characters, one uppercase, one number
-          </p>
+          <p className="text-muted-foreground text-xs">{messages.auth.forms.minPasswordHint}</p>
         </div>
 
         <div className="space-y-1">
           <label htmlFor="confirmPassword" className="text-sm font-medium">
-            Confirm password
+            {messages.auth.forms.confirmPassword}
           </label>
           <input
             id="confirmPassword"
@@ -113,9 +119,12 @@ export function SignUpForm() {
       </form>
 
       <p className="text-muted-foreground text-center text-sm">
-        Already have an account?{' '}
-        <Link href="/sign-in" className="font-medium underline underline-offset-4">
-          Sign in
+        {messages.auth.forms.alreadyHaveAccount}{' '}
+        <Link
+          href={getLocalizedPathname(locale, ROUTES.SIGN_IN)}
+          className="font-medium underline underline-offset-4"
+        >
+          {messages.common.signIn}
         </Link>
       </p>
     </div>

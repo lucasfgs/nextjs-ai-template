@@ -1,24 +1,30 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import Link from 'next/link'
+import { ROUTES } from '@/lib/constants'
+import { getLocalizedPathname } from '@/modules/i18n'
+import { useI18n } from '@/providers/i18n-provider'
 import { forgotPasswordAction } from '../actions/forgot-password.action'
 
 function SubmitButton() {
+  const { messages } = useI18n()
   const { pending } = useFormStatus()
+
   return (
     <button
       type="submit"
       disabled={pending}
       className="bg-foreground text-background w-full rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {pending ? 'Sending…' : 'Send reset link'}
+      {pending ? messages.auth.forms.sending : messages.auth.forms.sendResetLink}
     </button>
   )
 }
 
 export function ForgotPasswordForm() {
+  const { locale, messages } = useI18n()
   const [state, action] = useActionState(forgotPasswordAction, {})
 
   if (state.success) {
@@ -27,8 +33,11 @@ export function ForgotPasswordForm() {
         <div className="rounded-md bg-green-50 px-4 py-4 text-sm text-green-800 dark:bg-green-950 dark:text-green-200">
           {state.success}
         </div>
-        <Link href="/sign-in" className="block text-center text-sm underline underline-offset-4">
-          Back to sign in
+        <Link
+          href={getLocalizedPathname(locale, ROUTES.SIGN_IN)}
+          className="block text-center text-sm underline underline-offset-4"
+        >
+          {messages.common.backToSignIn}
         </Link>
       </div>
     )
@@ -44,7 +53,7 @@ export function ForgotPasswordForm() {
 
       <div className="space-y-1">
         <label htmlFor="email" className="text-sm font-medium">
-          Email
+          {messages.common.email}
         </label>
         <input
           id="email"
@@ -59,8 +68,11 @@ export function ForgotPasswordForm() {
       <SubmitButton />
 
       <p className="text-muted-foreground text-center text-sm">
-        <Link href="/sign-in" className="underline underline-offset-4">
-          Back to sign in
+        <Link
+          href={getLocalizedPathname(locale, ROUTES.SIGN_IN)}
+          className="underline underline-offset-4"
+        >
+          {messages.common.backToSignIn}
         </Link>
       </p>
     </form>
