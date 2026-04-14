@@ -26,12 +26,19 @@ projects. It emphasizes:
 
 - `src/app/` — routes, layouts, and metadata only
 - `src/modules/` — feature modules with public `index.ts` entrypoints
+- `src/modules/template/` — replaceable starter/example product screens
+- `src/config/` — shared navigation, route context, and metadata config
 - `src/components/` — shared UI, layout, and primitive components
 - `src/lib/` — pure utilities and shared constants
 - `src/providers/` — app-wide React providers
 - `src/env.ts` — all environment variable validation
 - `prisma/` — schema, seed, and database tooling
 - `.agent-platform/` — machine-readable project context for AI agents
+  - `manifest.json` — entrypoint map for agent context files
+  - `project-context.json` — stack, conventions, and directory roles
+  - `route-map.json` — public, protected, and API route inventory
+  - `module-boundaries.json` — import boundary contract and exceptions
+  - `customization-checklist.json` — required template handoff steps
 
 ## Getting started
 
@@ -135,9 +142,10 @@ Required variables live in `src/env.ts` and must be mirrored in `.env.example`.
 
 ## Auth and route protection
 
-- `src/modules/auth/auth.config.ts` is Edge-safe and used by middleware.
+- `src/modules/auth/auth.config.ts` is Edge-safe and re-exported via `src/modules/auth/edge.ts`.
 - `src/modules/auth/auth.ts` contains the full NextAuth instance.
 - Protected pages live under `(dashboard)` and `settings` is guarded in middleware.
+- `src/proxy.ts` should import `@/modules/auth/edge`, not internal auth files.
 
 ## Email flow
 
@@ -152,9 +160,9 @@ If Resend is not configured, email sends fail gracefully with a clear message.
 ## Customizing this template
 
 1. Update `APP_CONFIG` in `src/lib/constants.ts`.
-2. Replace the landing page copy in `src/app/page.tsx`.
+2. Replace the starter screens in `src/modules/template/`.
 3. Add feature modules under `src/modules/<feature>/`.
-4. Extend navigation in `src/components/layout/sidebar.tsx`.
+4. Extend navigation in `src/config/navigation.ts`.
 5. Update docs in `README.md`, `CLAUDE.md`, and `.agent-platform/` together.
 
 ## Available scripts
@@ -167,6 +175,7 @@ npm run typecheck
 npm run test:ci
 npm run storybook
 npm run storybook:build
+npm run validate:template
 npm run db:migrate
 npm run db:push
 npm run db:studio
@@ -177,14 +186,16 @@ npm run db:generate
 ## Notes for AI agents
 
 - Keep business logic out of `src/app/`.
-- Import feature internals through module barrels only.
+- Import feature internals through module barrels only. The allowed auth subpaths are `@/modules/auth/edge` for proxy and `@/modules/auth/client` for Client Components.
 - Use `env` for configuration and `APP_CONFIG` for product metadata.
 - Prefer Server Components unless client state is required.
-- Preserve the edge-safe auth split when modifying middleware or auth flows.
+- Preserve the edge-safe auth split when modifying proxy or auth flows.
+- Replace starter screens inside `src/modules/template/` instead of growing example UI inside `src/app/`.
 
 ## How to customize this template
 
 - Set `NEXT_PUBLIC_APP_NAME` and `NEXT_PUBLIC_APP_URL` in `.env.local`.
 - Edit `src/env.ts` when adding or changing environment variables.
 - Update product metadata and shared defaults in `src/lib/constants.ts`.
+- Replace or remove the starter screens in `src/modules/template/` as your product takes shape.
 - Keep agent-facing instructions in `.agent-platform/` and `CLAUDE.md` in sync.

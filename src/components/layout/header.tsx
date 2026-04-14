@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ThemeToggle } from '@/components/common/theme-toggle'
+import { getDashboardPageContext } from '@/config/page-context'
 import { APP_CONFIG, ROUTES } from '@/lib/constants'
-import { UserAvatar } from '@/modules/auth'
+import { UserAvatar } from '@/modules/auth/client'
 
 function getAppInitials(name: string) {
   return name
@@ -16,54 +17,14 @@ function getAppInitials(name: string) {
     .toUpperCase()
 }
 
-function getPageContext(pathname: string) {
-  if (pathname.startsWith(ROUTES.SETTINGS_BILLING)) {
-    return {
-      eyebrow: 'Settings',
-      title: 'Billing',
-      description: 'Manage your plan, subscription status, and payment access.',
-    }
-  }
-
-  if (pathname.startsWith(ROUTES.SETTINGS_PROFILE)) {
-    return {
-      eyebrow: 'Settings',
-      title: 'Profile',
-      description: 'Update your personal details and keep your workspace polished.',
-    }
-  }
-
-  if (pathname.startsWith(ROUTES.SETTINGS_SECURITY)) {
-    return {
-      eyebrow: 'Settings',
-      title: 'Security',
-      description: 'Review the latest account protections and upcoming security tools.',
-    }
-  }
-
-  if (pathname.startsWith(ROUTES.SETTINGS)) {
-    return {
-      eyebrow: 'Settings',
-      title: 'Account settings',
-      description: 'Jump into profile, billing, and security controls from one place.',
-    }
-  }
-
-  return {
-    eyebrow: 'Overview',
-    title: 'Dashboard',
-    description: 'See your account readiness, recent milestones, and suggested next steps.',
-  }
-}
-
 export function Header() {
   const pathname = usePathname()
-  const pageContext = getPageContext(pathname)
+  const pageContext = getDashboardPageContext(pathname)
   const appInitials = getAppInitials(APP_CONFIG.NAME)
 
   return (
     <header className="bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="flex h-16 w-full items-center justify-between gap-4 px-5 sm:px-6 xl:px-8 2xl:px-10">
         <div className="flex min-w-0 items-center gap-4">
           <Link
             href={ROUTES.DASHBOARD}
@@ -73,7 +34,7 @@ export function Header() {
               {appInitials}
             </span>
             <div className="hidden sm:block">
-              <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.25em]">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-[0.25em] uppercase">
                 Workspace
               </p>
               <p className="text-sm font-semibold">{APP_CONFIG.NAME}</p>
@@ -83,7 +44,7 @@ export function Header() {
           <div className="bg-border hidden h-9 w-px md:block" />
 
           <div className="hidden min-w-0 md:block">
-            <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
+            <p className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase">
               {pageContext.eyebrow}
             </p>
             <p className="truncate text-sm font-medium">{pageContext.title}</p>

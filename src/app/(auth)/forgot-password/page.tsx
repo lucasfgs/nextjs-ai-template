@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/config/page-metadata'
 import { ForgotPasswordForm } from '@/modules/auth'
 
-export const metadata: Metadata = { title: 'Forgot Password' }
+export const metadata: Metadata = pageMetadata.forgotPassword
 
 export default function ForgotPasswordPage() {
   return (

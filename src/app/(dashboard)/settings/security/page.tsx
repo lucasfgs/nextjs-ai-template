@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/config/page-metadata'
 
-export const metadata: Metadata = { title: 'Security Settings' }
+export const metadata: Metadata = pageMetadata.settingsSecurity
 
 export default function SecuritySettingsPage() {
   return (

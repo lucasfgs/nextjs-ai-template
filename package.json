@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "test": "jest",
     "test:ci": "jest --coverage --passWithNoTests",
+    "validate:template": "node ./scripts/validate-template.mjs",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",

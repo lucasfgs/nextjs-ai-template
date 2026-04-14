@@ -2,6 +2,7 @@
 
 This file provides context for AI assistants working in this codebase.
 Read this before making changes. Keep it updated as the project evolves.
+Machine-readable companion context lives in `.agent-platform/`.
 
 ## Project Overview
 
@@ -32,16 +33,18 @@ code organization. Designed as a plug-and-play base for new projects.
 src/
   app/           — Next.js App Router ONLY. No business logic here.
   modules/       — Feature modules (plug-and-play). Each has index.ts barrel.
+    template/    — Replaceable starter/example product screens for downstream apps.
   components/
     ui/          — shadcn/ui components. Use `npx shadcn add <name>` to add.
     common/      — Shared non-module components (providers, spinners).
     layout/      — Header, sidebar, footer shell components.
+  config/        — Shared navigation, page metadata, and route context config.
   lib/           — Pure utilities (no React, no side effects at import time).
   store/         — Zustand stores. Client Components only.
   providers/     — React context providers composed into root layout.
   hooks/         — Global shared React hooks.
   env.ts         — Single source of truth for all environment variables.
-  middleware.ts  — Edge-safe auth guards + redirects (imports auth.config only).
+  proxy.ts       — Edge-safe auth guards + redirects (imports auth config only).
 ```
 
 ## Module Structure Rule
@@ -63,15 +66,22 @@ src/modules/<name>/
 **Rule**: Never import `src/modules/<name>/internal-file` from outside that module.
 Always import from `src/modules/<name>` (the index.ts barrel).
 
+Exception: `src/proxy.ts` may import `@/modules/auth/edge`, which is the
+only allowed public subpath for edge-safe auth configuration.
+Client Components may import `@/modules/auth/client`, which is the only allowed
+client-safe auth subpath.
+
 ## Auth Architecture — CRITICAL
 
 Auth.js v5 uses a split-config pattern to support Edge Runtime in middleware:
 
 - `src/modules/auth/auth.config.ts` — providers + callbacks, **NO Prisma import**.
-  This is Edge-safe and used by `src/middleware.ts`.
+  This is Edge-safe and re-exported through `src/modules/auth/edge.ts`.
 - `src/modules/auth/auth.ts` — full `NextAuth()` with `PrismaAdapter`.
   Node.js runtime ONLY — used by API routes and Server Actions.
-- `src/middleware.ts` — imports `auth.config.ts` ONLY.
+- `src/modules/auth/edge.ts` — public edge-safe entrypoint for proxy.
+- `src/modules/auth/client.ts` — public client-safe entrypoint for auth UI.
+- `src/proxy.ts` — imports `@/modules/auth/edge` ONLY.
 
 Violating this pattern causes: `PrismaClient is not supported in Edge Runtime`.
 
@@ -193,6 +203,7 @@ npm run typecheck    # TypeScript check
 npm run format       # Prettier write
 npm test             # Jest watch
 npm run test:ci      # Jest CI (coverage)
+npm run validate:template  # Verify docs, env contract, module boundaries, and agent context
 npm run db:migrate   # Create + apply migration
 npm run db:studio    # Prisma Studio
 npm run db:seed      # Seed dev data
@@ -215,14 +226,14 @@ docker compose -f docker/docker-compose.yml up  # Full stack with DB
 4. Implement repository -> service -> actions/components.
 5. Export public API from `index.ts`.
 6. Add route group under `src/app/(dashboard)/<name>/` if needed.
-7. Add nav link in `src/components/layout/sidebar.tsx`.
+7. Add nav link in `src/config/navigation.ts`.
 
 ## Removing a Feature Module
 
 1. Delete `src/modules/<name>/`.
 2. Remove its Prisma models from `schema.prisma` and migrate.
 3. Remove its route group from `src/app/`.
-4. Remove its nav link from `sidebar.tsx`.
+4. Remove its nav link from `src/config/navigation.ts`.
 5. Run `prisma generate`.
 
 ## What NOT to Do
@@ -234,4 +245,5 @@ docker compose -f docker/docker-compose.yml up  # Full stack with DB
 - Do not put business logic in `src/app/` pages or API routes.
 - Do not create a second `PrismaClient` — use `src/lib/prisma.ts`.
 - Do not use Zustand stores in Server Components.
-- Do not import `src/modules/auth/auth.ts` (full instance) in `src/middleware.ts`.
+- Do not import `src/modules/auth/auth.ts` (full instance) in `src/proxy.ts`.
+- Do not keep example product screens inside `src/app/`; move them into `src/modules/template/` or a real product module.

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "project": "nextjs-ai-template",
+  "framework": "nextjs-app-router",
+  "entrypoints": {
+    "projectContext": "./project-context.json",
+    "routeMap": "./route-map.json",
+    "moduleBoundaries": "./module-boundaries.json",
+    "customizationChecklist": "./customization-checklist.json"
+  }
+}

@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { pageMetadata } from '@/config/page-metadata'
 import { auth } from '@/modules/auth'
 import { userService } from '@/modules/user'
 import { ProfileForm } from '@/modules/user'
 
-export const metadata: Metadata = { title: 'Profile Settings' }
+export const metadata: Metadata = pageMetadata.settingsProfile
 
 export default async function ProfileSettingsPage() {
   const session = await auth()

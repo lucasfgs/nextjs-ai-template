@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/config/page-metadata'
 import { SignUpForm } from '@/modules/auth'
 
-export const metadata: Metadata = { title: 'Sign Up' }
+export const metadata: Metadata = pageMetadata.signUp
 
 export default function SignUpPage() {
   return (

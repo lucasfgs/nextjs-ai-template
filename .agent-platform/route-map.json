@@ -1,0 +1,25 @@
+{
+  "publicRoutes": [
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-email"
+  ],
+  "protectedRoutes": [
+    "/dashboard",
+    "/settings",
+    "/settings/profile",
+    "/settings/security",
+    "/settings/billing"
+  ],
+  "apiRoutes": [
+    "/api/auth/[...nextauth]",
+    "/api/health",
+    "/api/user/me",
+    "/api/stripe/checkout",
+    "/api/stripe/portal",
+    "/api/stripe/webhook"
+  ]
+}

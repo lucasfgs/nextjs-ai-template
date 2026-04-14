@@ -6,7 +6,8 @@ import { billingService, getStripeClient } from '@/modules/billing'
 
 export async function POST(req: Request) {
   try {
-    const signature = headers().get('stripe-signature')
+    const requestHeaders = await headers()
+    const signature = requestHeaders.get('stripe-signature')
     if (!signature) return NextResponse.json({ error: 'Missing Stripe signature' }, { status: 400 })
     if (!env.STRIPE_WEBHOOK_SECRET) {
       return NextResponse.json({ error: 'Webhook secret is not configured' }, { status: 500 })

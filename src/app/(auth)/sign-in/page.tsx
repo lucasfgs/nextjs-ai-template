@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/config/page-metadata'
 import { SignInForm } from '@/modules/auth'
 
-export const metadata: Metadata = { title: 'Sign In' }
+export const metadata: Metadata = pageMetadata.signIn
 
 export default function SignInPage() {
   return (

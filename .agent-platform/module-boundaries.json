@@ -1,0 +1,19 @@
+{
+  "rule": "Do not import internal module files across module boundaries.",
+  "allowedPublicEntrypoints": ["@/modules/<name>", "@/modules/auth/edge", "@/modules/auth/client"],
+  "restrictedPattern": "@/modules/*/*",
+  "exceptions": [
+    {
+      "path": "@/modules/auth/edge",
+      "reason": "Edge-safe public auth entrypoint for middleware."
+    },
+    {
+      "path": "@/modules/auth/client",
+      "reason": "Client-safe public auth entrypoint for Client Components."
+    }
+  ],
+  "notes": [
+    "Use relative imports within a module.",
+    "Middleware must not import the full Auth.js instance."
+  ]
+}

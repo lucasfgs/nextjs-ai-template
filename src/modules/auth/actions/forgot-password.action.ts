@@ -2,7 +2,7 @@
 
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
-import { TOKEN_EXPIRY, ROUTES } from '@/lib/constants'
+import { TOKEN_EXPIRY } from '@/lib/constants'
 import { emailService, ResetPasswordTemplate } from '@/modules/email'
 import { forgotPasswordSchema } from '../schemas/auth.schemas'
 import type { ActionState } from '../types/auth.types'

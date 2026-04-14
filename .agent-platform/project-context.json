@@ -1,0 +1,32 @@
+{
+  "name": "nextjs-ai-template",
+  "purpose": "Baseline template for AI-generated software projects.",
+  "stack": {
+    "framework": "Next.js 16 App Router",
+    "react": "19",
+    "database": "Prisma 7 + PostgreSQL",
+    "auth": "Auth.js v5",
+    "styling": "Tailwind CSS v4 + Radix UI",
+    "testing": "Jest + Testing Library",
+    "docs": "Storybook 10"
+  },
+  "directoryRoles": {
+    "src/app": "Routes, layouts, and route metadata only.",
+    "src/modules": "Feature modules and example product surfaces.",
+    "src/config": "Shared navigation, route context, and metadata config.",
+    "src/components": "Shared UI primitives and shell components.",
+    "src/lib": "Low-level utilities and shared constants.",
+    "src/providers": "App-wide React providers.",
+    "prisma": "Schema, migrations, and local seed tooling."
+  },
+  "templateSurface": {
+    "module": "@/modules/template",
+    "responsibility": "Contains starter/example screens that can be replaced by downstream products."
+  },
+  "conventions": {
+    "preferServerComponents": true,
+    "envAccess": "Use env from src/env.ts in application code.",
+    "moduleImports": "Import modules through public entrypoints only.",
+    "routeLogic": "Keep business logic out of src/app."
+  }
+}

@@ -5,7 +5,7 @@ import GitHub from 'next-auth/providers/github'
 
 /**
  * Edge-safe Auth.js configuration.
- * IMPORTANT: Do NOT import Prisma or bcryptjs here — this file runs in Edge Runtime (middleware).
+ * IMPORTANT: Do NOT import Prisma or bcryptjs here — this file runs in Edge Runtime (proxy).
  * Prisma and password verification are handled in auth.ts which runs in Node.js only.
  */
 export const authConfig: NextAuthConfig = {

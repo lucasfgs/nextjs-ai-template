@@ -1,6 +1,5 @@
 // Public API for the auth module
 export { auth, signIn, signOut, handlers } from './auth'
-export { authConfig } from './auth.config'
 
 // Actions
 export { signInAction } from './actions/sign-in.action'

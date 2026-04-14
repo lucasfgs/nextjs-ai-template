@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { pageMetadata } from '@/config/page-metadata'
 import { ResetPasswordForm } from '@/modules/auth'
 
-export const metadata: Metadata = { title: 'Reset Password' }
+export const metadata: Metadata = pageMetadata.resetPassword
 
 interface ResetPasswordPageProps {
   searchParams: Promise<{ token?: string }>

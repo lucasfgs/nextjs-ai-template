@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { pageMetadata } from '@/config/page-metadata'
 import { auth } from '@/modules/auth'
 import { billingService, billingPlans } from '@/modules/billing'
 
-export const metadata: Metadata = { title: 'Billing Settings' }
+export const metadata: Metadata = pageMetadata.settingsBilling
 
 export default async function BillingSettingsPage() {
   const session = await auth()

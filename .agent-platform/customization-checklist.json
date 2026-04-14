@@ -1,0 +1,14 @@
+{
+  "required": [
+    "Set NEXT_PUBLIC_APP_NAME and NEXT_PUBLIC_APP_URL.",
+    "Review src/lib/constants.ts for product defaults.",
+    "Replace starter/example screens in src/modules/template.",
+    "Keep README.md, CLAUDE.md, and .agent-platform/ in sync.",
+    "Add new feature modules under src/modules/<feature>/ with an index.ts entrypoint."
+  ],
+  "recommended": [
+    "Extend src/config/navigation.ts when new protected areas are added.",
+    "Update src/config/page-metadata.ts when new routes are created.",
+    "Run npm run validate:template before publishing the template."
+  ]
+}

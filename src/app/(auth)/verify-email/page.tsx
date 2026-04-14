@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { pageMetadata } from '@/config/page-metadata'
 import { verifyEmailAction } from '@/modules/auth'
 
-export const metadata: Metadata = { title: 'Verify Email' }
+export const metadata: Metadata = pageMetadata.verifyEmail
 
 interface VerifyEmailPageProps {
   searchParams: Promise<{ token?: string }>
