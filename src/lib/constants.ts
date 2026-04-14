@@ -11,6 +11,7 @@ export const ROUTES = {
   SETTINGS: '/settings',
   SETTINGS_PROFILE: '/settings/profile',
   SETTINGS_SECURITY: '/settings/security',
+  SETTINGS_BILLING: '/settings/billing',
 } as const
 
 const DEFAULT_APP_DESCRIPTION =

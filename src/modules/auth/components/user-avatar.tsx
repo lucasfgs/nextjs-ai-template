@@ -1,8 +1,18 @@
 'use client'
 
+import { CreditCard, LogOut, ShieldCheck, User } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui'
+import { ROUTES } from '@/lib/constants'
 import { signOutAction } from '../actions/sign-out.action'
 
 export function UserAvatar() {
@@ -14,50 +24,75 @@ export function UserAvatar() {
   const initials = name
     ? name
         .split(' ')
-        .map((n: string) => n[0])
+        .map((part) => part[0])
         .join('')
         .toUpperCase()
         .slice(0, 2)
     : (email?.[0]?.toUpperCase() ?? '?')
 
   return (
-    <div className="group relative">
-      <button className="bg-muted ring-background flex h-8 w-8 items-center justify-center overflow-hidden rounded-full text-xs font-medium ring-2">
-        {image ? (
-          <Image src={image} alt={name ?? 'User'} width={32} height={32} className="object-cover" />
-        ) : (
-          initials
-        )}
-      </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          aria-label="Open user menu"
+          className="hover:bg-accent flex items-center gap-3 rounded-full border px-2 py-1.5 text-left transition-colors"
+        >
+          <span className="bg-muted ring-background flex h-9 w-9 items-center justify-center overflow-hidden rounded-full text-xs font-medium ring-2">
+            {image ? (
+              <Image
+                src={image}
+                alt={name ?? 'User'}
+                width={36}
+                height={36}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              initials
+            )}
+          </span>
+          <span className="hidden min-w-0 sm:block">
+            <span className="block max-w-36 truncate text-sm font-medium">
+              {name ?? 'Your account'}
+            </span>
+            <span className="text-muted-foreground block max-w-36 truncate text-xs">{email}</span>
+          </span>
+        </button>
+      </DropdownMenuTrigger>
 
-      <div className="bg-popover absolute top-10 right-0 z-50 hidden w-48 rounded-md border p-1 shadow-md group-hover:block">
-        <div className="px-3 py-2 text-xs">
-          <p className="font-medium">{name}</p>
-          <p className="text-muted-foreground">{email}</p>
-        </div>
-        <div className="bg-border my-1 h-px" />
-        <Link
-          href="/settings/profile"
-          className="hover:bg-accent block rounded px-3 py-1.5 text-sm"
-        >
-          Profile
-        </Link>
-        <Link
-          href="/settings/security"
-          className="hover:bg-accent block rounded px-3 py-1.5 text-sm"
-        >
-          Security
-        </Link>
-        <div className="bg-border my-1 h-px" />
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="space-y-1">
+          <p className="text-sm font-medium">{name ?? 'Your account'}</p>
+          <p className="text-muted-foreground text-xs font-normal">{email}</p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href={ROUTES.SETTINGS_PROFILE}>
+            <User className="h-4 w-4" />
+            <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={ROUTES.SETTINGS_SECURITY}>
+            <ShieldCheck className="h-4 w-4" />
+            <span>Security</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={ROUTES.SETTINGS_BILLING}>
+            <CreditCard className="h-4 w-4" />
+            <span>Billing</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <form action={signOutAction}>
-          <button
-            type="submit"
-            className="text-destructive hover:bg-accent w-full rounded px-3 py-1.5 text-left text-sm"
-          >
-            Sign out
-          </button>
+          <DropdownMenuItem asChild className="text-destructive focus:text-destructive">
+            <button type="submit" className="w-full">
+              <LogOut className="h-4 w-4" />
+              <span>Sign out</span>
+            </button>
+          </DropdownMenuItem>
         </form>
-      </div>
-    </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
