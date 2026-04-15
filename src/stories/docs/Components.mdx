@@ -1,0 +1,75 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Checklist, ComponentMatrix, PageLead } from './docs-components'
+
+<Meta title="Style Guide/Components" />
+
+<PageLead
+  eyebrow="Usage guidance"
+  title="Component library"
+  description="Shared components are the day-to-day API of this style guide. They live in `src/components/ui/`, are exported through the UI barrel, and should always be documented with co-located stories. Use the component stories for implementation detail and this page for the system-level map."
+/>
+
+<ComponentMatrix
+  sections={[
+    {
+      title: 'UI',
+      description: 'Core presentation primitives and feedback surfaces for common product layouts.',
+      items: ['Alert', 'Avatar', 'Badge', 'Button', 'Card', 'Progress', 'Separator', 'Skeleton'],
+    },
+    {
+      title: 'Forms',
+      description:
+        'Input and selection controls that should be preferred over bespoke form styling.',
+      items: ['Checkbox', 'Input', 'Label', 'Radio Group', 'Select', 'Switch', 'Textarea'],
+    },
+    {
+      title: 'Navigation',
+      description: 'Disclosure and navigation helpers used to manage dense interface structure.',
+      items: ['Accordion', 'Scroll Area', 'Tabs'],
+    },
+    {
+      title: 'Overlays',
+      description: 'Floating and modal surfaces for focused tasks and contextual actions.',
+      items: ['Dialog', 'Dropdown Menu', 'Tooltip'],
+    },
+    {
+      title: 'Feedback',
+      description:
+        'Transient feedback patterns that complement inline alerts and field validation.',
+      items: ['Toaster'],
+    },
+  ]}
+/>
+
+## Story coverage standards
+
+<Checklist
+  items={[
+    <>
+      Show the <strong>default state</strong> and all user-facing variants that are expected in app
+      code.
+    </>,
+    <>
+      Capture at least one <strong>realistic composition</strong> so the component is documented in
+      context, not only in isolation.
+    </>,
+    <>
+      Include key <strong>interaction states</strong> such as disabled, checked, selected, loading,
+      destructive, or empty states when relevant.
+    </>,
+    <>
+      Add <strong>accessibility notes</strong> whenever a component needs labels, helper text,
+      keyboard expectations, or visible focus behavior.
+    </>,
+    <>
+      Keep stories <strong>co-located</strong> with the component file so implementation and
+      documentation evolve together.
+    </>,
+  ]}
+/>
+
+## When to add a new primitive
+
+Add a new shared primitive only when the UI pattern is reused across features and the existing
+library cannot express it with composition. If a need is isolated to one module or one screen, start
+with local composition before growing the shared design-system surface.

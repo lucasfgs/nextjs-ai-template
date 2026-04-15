@@ -1,64 +1,126 @@
 import { Meta } from '@storybook/addon-docs/blocks'
+import { DoDont, PageLead, RuleGrid } from './docs-components'
 
-<Meta title="Documentation/Typography" />
+<Meta title="Style Guide/Foundations/Typography" />
 
-# Typography
+<PageLead
+  eyebrow="Foundations"
+  title="Typography"
+  description="Typography should feel compact, direct, and product-focused. Geist Sans handles interface copy, while Geist Mono is reserved for code-like values, identifiers, and technical metadata. Use hierarchy intentionally so dense dashboard screens remain easy to scan."
+/>
 
 ## Font families
 
-<div style={{ marginBottom: '32px' }}>
-  <p style={{ fontFamily: 'var(--font-geist-sans, sans-serif)', fontSize: '16px', marginBottom: '4px' }}>
-    <strong>Geist Sans</strong> — the primary UI font. Used for body text, headings, labels, and all interactive elements.
-  </p>
-  <p style={{ fontFamily: 'var(--font-geist-mono, monospace)', fontSize: '14px', color: 'var(--muted-foreground)' }}>
-    Geist Mono — used for code snippets, technical strings, and monospaced data.
-  </p>
-</div>
-
-## Heading scale
-
-<div style={{ fontFamily: 'var(--font-geist-sans, sans-serif)' }}>
-  <div style={{ fontSize: '36px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '12px' }}>H1 — 36px / 700 / tracking-tight</div>
-  <div style={{ fontSize: '30px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '12px' }}>H2 — 30px / 700 / tracking-tight</div>
-  <div style={{ fontSize: '24px', fontWeight: 600, lineHeight: 1.25, marginBottom: '12px' }}>H3 — 24px / 600</div>
-  <div style={{ fontSize: '20px', fontWeight: 600, lineHeight: 1.35, marginBottom: '12px' }}>H4 — 20px / 600</div>
-  <div style={{ fontSize: '16px', fontWeight: 600, lineHeight: 1.5, marginBottom: '12px' }}>H5 — 16px / 600</div>
-  <div style={{ fontSize: '14px', fontWeight: 600, lineHeight: 1.5, marginBottom: '12px' }}>H6 — 14px / 600</div>
-</div>
-
-## Body scale
-
-<div style={{ fontFamily: 'var(--font-geist-sans, sans-serif)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-  <div>
-    <span style={{ fontSize: '18px', lineHeight: '28px' }}>Large — 18px / line-height 28px</span>
-    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-lg</span>
+<div className="grid gap-4 md:grid-cols-2">
+  <div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+    <p className="text-muted-foreground text-xs font-medium tracking-[0.24em] uppercase">Primary</p>
+    <p className="mt-3 text-3xl font-semibold tracking-tight">Geist Sans</p>
+    <p className="text-muted-foreground mt-2 text-sm leading-6">
+      Use for headings, body copy, labels, navigation items, helper text, and button content.
+      Tailwind utility: <code>font-sans</code>.
+    </p>
   </div>
-  <div>
-    <span style={{ fontSize: '16px', lineHeight: '24px' }}>Base — 16px / line-height 24px</span>
-    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-base</span>
-  </div>
-  <div>
-    <span style={{ fontSize: '14px', lineHeight: '20px' }}>Small — 14px / line-height 20px</span>
-    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-sm</span>
-  </div>
-  <div>
-    <span style={{ fontSize: '12px', lineHeight: '16px' }}>Extra small — 12px / line-height 16px</span>
-    <br /><span style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>text-xs</span>
+  <div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+    <p className="text-muted-foreground text-xs font-medium tracking-[0.24em] uppercase">
+      Technical
+    </p>
+    <p className="mt-3 font-mono text-2xl font-semibold">Geist Mono</p>
+    <p className="text-muted-foreground mt-2 text-sm leading-6">
+      Reserve for snippets, IDs, hashes, compact data labels, and implementation details. Tailwind
+      utility: <code>font-mono</code>.
+    </p>
   </div>
 </div>
 
-## Colour usage
+## Recommended text scale
 
-| Purpose | Class | Token |
-|---------|-------|-------|
-| Primary text | `text-foreground` | `--foreground` |
-| Secondary text | `text-muted-foreground` | `--muted-foreground` |
-| Destructive text | `text-destructive` | `--destructive` |
+<div className="space-y-4">
+  <div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+    <p className="text-muted-foreground text-xs font-medium tracking-[0.24em] uppercase">Display</p>
+    <p className="mt-3 text-5xl font-semibold tracking-tight">Workspace health overview</p>
+    <p className="text-muted-foreground mt-2 text-sm">
+      Use sparingly for hero moments and the top of high-value dashboard screens.
+    </p>
+  </div>
+  <div className="grid gap-4 md:grid-cols-2">
+    <div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+      <p className="text-muted-foreground text-xs font-medium tracking-[0.24em] uppercase">
+        Section heading
+      </p>
+      <p className="mt-3 text-2xl font-semibold tracking-tight">Billing settings</p>
+      <p className="text-muted-foreground mt-2 text-sm">
+        Use for card titles, page sections, and modal headers.
+      </p>
+    </div>
+    <div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+      <p className="text-muted-foreground text-xs font-medium tracking-[0.24em] uppercase">Body</p>
+      <p className="mt-3 text-base leading-7">
+        Default body copy should stay readable and compact. Aim for concise sentences and use muted
+        text for support copy instead of shrinking everything.
+      </p>
+    </div>
+  </div>
+  <div className="grid gap-4 md:grid-cols-2">
+    <div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+      <p className="text-muted-foreground text-xs font-medium tracking-[0.24em] uppercase">
+        Meta / caption
+      </p>
+      <p className="text-muted-foreground mt-3 text-sm">Last synced 3 minutes ago</p>
+      <p className="text-muted-foreground mt-2 text-sm">
+        Use for timestamps, helper text, and secondary details.
+      </p>
+    </div>
+    <div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+      <p className="text-muted-foreground text-xs font-medium tracking-[0.24em] uppercase">
+        Technical line
+      </p>
+      <p className="mt-3 font-mono text-sm">user_2Jf8P9 • plan_pro_monthly</p>
+      <p className="text-muted-foreground mt-2 text-sm">
+        Keep monospace usage intentional and limited to data that benefits from fixed-width
+        presentation.
+      </p>
+    </div>
+  </div>
+</div>
 
-## Usage guidelines
+## Usage principles
 
-- **H1 / H2** — page titles and major section headers only.
-- **H3 / H4** — card titles, modal headings, sidebar sections.
-- **Body base** — default running text.
-- **Body small** — metadata, captions, helper text.
-- **Monospace** — code blocks, IDs, hashes. Apply `font-mono`.
+<RuleGrid
+  items={[
+    {
+      title: 'Lead with hierarchy, not size inflation',
+      body: 'Increase emphasis with weight, spacing, and contrast before jumping to oversized text. Large type should remain exceptional.',
+    },
+    {
+      title: 'Use muted copy for support text',
+      body: 'Helper text and metadata should rely on `text-muted-foreground` rather than reducing opacity on arbitrary colors.',
+    },
+    {
+      title: 'Keep headings compact',
+      body: 'Most application surfaces work best with `text-2xl` or smaller. Reserve display sizes for landing and executive-summary moments.',
+    },
+    {
+      title: 'Write for scanning',
+      body: 'Short headings, strong opening words, and clear labels make dense product interfaces easier to parse.',
+    },
+  ]}
+/>
+
+## Good hierarchy vs noisy hierarchy
+
+<DoDont
+  doTitle="Create a predictable reading path"
+  doBody={
+    <>
+      Use one strong heading, one short supporting paragraph, and consistent metadata sizing. This
+      keeps cards and settings pages readable even when many sections appear on screen at once.
+    </>
+  }
+  dontTitle="Compete for attention inside one surface"
+  dontBody={
+    <>
+      Avoid multiple oversized headings, decorative capitalization, or mixing muted and
+      high-contrast treatments arbitrarily. If every line shouts, nothing becomes easier to scan.
+    </>
+  }
+/>

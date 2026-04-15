@@ -1,0 +1,76 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Button, Input, Label } from '@/components/ui'
+import { DoDont, PageLead, RuleGrid } from './docs-components'
+
+<Meta title="Style Guide/Accessibility" />
+
+<PageLead
+  eyebrow="Quality guardrails"
+  title="Accessibility"
+  description="Accessibility is part of the component contract, not a final QA pass. Shared primitives already include strong Radix foundations, but teams still need to provide labels, preserve focus visibility, and communicate state with both copy and visuals."
+/>
+
+## Non-negotiables
+
+<RuleGrid
+  items={[
+    {
+      title: 'Every control needs an accessible name',
+      body: 'Use visible labels, `aria-label`, or `aria-labelledby` so buttons, inputs, toggles, and dialogs remain understandable to assistive technologies.',
+    },
+    {
+      title: 'Focus must stay visible',
+      body: 'Keep the shared ring styles intact. Do not remove focus outlines unless you replace them with an equal or stronger visible treatment.',
+    },
+    {
+      title: 'Color cannot carry meaning alone',
+      body: 'Pair status colors with clear labels, icons, or helper text so success, warning, and destructive states remain understandable without color perception.',
+    },
+    {
+      title: 'Keyboard usage should be intentional',
+      body: 'Dialogs, menus, tabs, selects, and accordions must remain usable with a keyboard only. If you customize interactions, re-test keyboard flow in Storybook.',
+    },
+  ]}
+/>
+
+## Example: labeled input
+
+<div className="bg-card text-card-foreground rounded-2xl border p-5 shadow-sm">
+  <div className="gap-stack-sm grid max-w-sm">
+    <Label htmlFor="email-address">Email address</Label>
+    <Input id="email-address" type="email" placeholder="you@example.com" />
+    <p className="text-muted-foreground text-sm">
+      Helper text should describe the format, intent, or validation requirement.
+    </p>
+  </div>
+</div>
+
+## Example: icon-only actions
+
+<DoDont
+  doTitle="Provide an accessible label"
+  doBody={
+    <div className="flex items-center gap-3">
+      <Button size="icon" aria-label="Create workspace">
+        +
+      </Button>
+      <span className="text-muted-foreground text-sm">
+        Icon-only controls still need a readable name.
+      </span>
+    </div>
+  }
+  dontTitle="Rely on the icon alone"
+  dontBody={
+    <>
+      An unlabeled icon button might look clear visually but appear as an unnamed control to
+      assistive technology and voice-control users.
+    </>
+  }
+/>
+
+## Review checklist
+
+- Tab through every interactive state in Storybook.
+- Test light and dark themes for visible focus, contrast, and disabled-state clarity.
+- Keep descriptive copy close to fields, destructive actions, and empty states.
+- Prefer semantic HTML and shared Radix primitives before reaching for custom interaction logic.

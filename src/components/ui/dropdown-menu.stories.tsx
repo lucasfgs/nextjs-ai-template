@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Cloud, CreditCard, Github, Keyboard, LogOut, Mail, Settings, User } from 'lucide-react'
+import { Cloud, CreditCard, GitBranch, Keyboard, LogOut, Mail, Settings, User } from 'lucide-react'
 import { Button } from './button'
 import {
   DropdownMenu,
@@ -56,8 +56,8 @@ export const Default: Story = {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Github />
-            <span>GitHub</span>
+            <GitBranch />
+            <span>Repository</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Mail />

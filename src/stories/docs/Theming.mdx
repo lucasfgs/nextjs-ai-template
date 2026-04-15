@@ -1,0 +1,106 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Badge, Button } from '@/components/ui'
+import { PageLead, RuleGrid, ThemePreview } from './docs-components'
+
+<Meta title="Style Guide/Theming" />
+
+<PageLead
+  eyebrow="Usage guidance"
+  title="Theming"
+  description="The app and Storybook both use the same token-driven light and dark themes. Storybook's theme toolbar toggles the `.dark` class on the preview root, mirroring how the application applies dark mode in production. Scoped token overrides let you rebrand the system without forking component code."
+/>
+
+## Theme behavior
+
+<RuleGrid
+  items={[
+    {
+      title: 'One token set, two modes',
+      body: 'Light mode is defined in `:root` and dark mode overrides live in `.dark` inside `src/app/globals.css`. Components should consume semantic utilities so both modes update automatically.',
+    },
+    {
+      title: 'Storybook matches the app',
+      body: 'The toolbar theme switch applies the same class-based theme mechanism used by the real UI. Validate interactive states in both modes before calling a component done.',
+    },
+    {
+      title: 'Brand locally when needed',
+      body: 'For tenant- or campaign-specific branding, scope token overrides to a wrapper instead of rewriting component classes. This keeps the shared system intact.',
+    },
+    {
+      title: 'Contrast is part of theming',
+      body: 'When you customize tokens, confirm text contrast, focus visibility, and destructive/status states in both themes.',
+    },
+  ]}
+/>
+
+## Scoped brand previews
+
+<div className="grid gap-4 lg:grid-cols-2">
+  <ThemePreview
+    name="Default theme"
+    description="The shared system should feel neutral and ready to customize."
+  >
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <Badge>Primary token</Badge>
+        <Badge variant="secondary">Secondary token</Badge>
+      </div>
+      <p className="text-muted-foreground text-sm leading-6">
+        Use semantic tokens as the contract. Components inherit brand and theme updates automatically.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <Button>Primary action</Button>
+        <Button variant="outline">Secondary action</Button>
+      </div>
+    </div>
+  </ThemePreview>
+
+  <ThemePreview
+    name="Scoped override"
+    description="A tenant wrapper can redefine only the brand-facing tokens it owns."
+    tokens={{
+      '--primary': '#1d4ed8',
+      '--primary-foreground': '#ffffff',
+      '--ring': '#1d4ed8',
+      '--accent': '#dbeafe',
+      '--accent-foreground': '#1e3a8a',
+      '--info': '#2563eb',
+      '--info-foreground': '#eff6ff',
+    }}
+  >
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <Badge>Tenant brand</Badge>
+        <Badge variant="secondary">Shared structure</Badge>
+      </div>
+      <p className="text-muted-foreground text-sm leading-6">
+        The buttons and badges below are the same shared primitives, now restyled through semantic tokens.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <Button>Launch workspace</Button>
+        <Button variant="outline">Review settings</Button>
+      </div>
+    </div>
+  </ThemePreview>
+</div>
+
+## Override pattern
+
+```css
+.brand-tenant {
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --ring: #1d4ed8;
+  --accent: #dbeafe;
+  --accent-foreground: #1e3a8a;
+}
+```
+
+## Theming guardrails
+
+- Change **semantic tokens**, not one-off component classes, when the brand shifts.
+- Keep `--primary`, `--accent`, `--ring`, and any status tones aligned so interactions feel cohesive.
+- Validate dark mode after every brand change. A light-theme palette that looks good can still fail in
+  dark surfaces or hover states.
+- Prefer scoped wrappers for brand variations so downstream apps can run multiple themes without
+  mutating the shared global contract.

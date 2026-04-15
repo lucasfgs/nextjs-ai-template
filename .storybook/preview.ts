@@ -4,7 +4,6 @@ import '../src/app/globals.css'
 
 const preview: Preview = {
   parameters: {
-    layout: 'centered',
     controls: {
       matchers: {
         color: /(background|color|fill|stroke)$/i,
@@ -13,6 +12,31 @@ const preview: Preview = {
     },
     docs: {
       toc: true,
+      controls: {
+        sort: 'requiredFirst',
+      },
+    },
+    options: {
+      storySort: {
+        order: [
+          'Style Guide',
+          [
+            'Introduction',
+            'Foundations',
+            ['Design Tokens', 'Typography', 'Spacing & Elevation'],
+            'Theming',
+            'Components',
+            'Patterns',
+            'Accessibility',
+            'Contribution Rules',
+          ],
+          'Forms',
+          'Navigation',
+          'Overlays',
+          'Feedback',
+          'UI',
+        ],
+      },
     },
     nextjs: {
       appDirectory: true,
