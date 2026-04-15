@@ -1,4 +1,4 @@
-import { signInSchema, signUpSchema, forgotPasswordSchema } from '@/modules/auth'
+import { signInSchema, signUpSchema, forgotPasswordSchema, getAuthSchemas } from '@/modules/auth'
 
 describe('signInSchema', () => {
   it('accepts valid credentials', () => {
