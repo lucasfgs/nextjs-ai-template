@@ -1,19 +1,22 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { verifyEmailSchema } from '../schemas/auth.schemas'
+import { getRequestI18n } from '@/modules/i18n'
+import { getAuthSchemas } from '../schemas/auth.schemas'
 import type { ActionState } from '../types/auth.types'
 
 export async function verifyEmailAction(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const { locale, messages } = await getRequestI18n()
+  const { verifyEmailSchema } = getAuthSchemas(locale)
   const parsed = verifyEmailSchema.safeParse({
     token: formData.get('token'),
   })
 
   if (!parsed.success) {
-    return { error: 'Invalid token' }
+    return { error: messages.validation.invalidToken }
   }
 
   const { token } = parsed.data
@@ -23,12 +26,12 @@ export async function verifyEmailAction(
   })
 
   if (!verificationToken || verificationToken.type !== 'EMAIL_VERIFICATION') {
-    return { error: 'Invalid or expired verification token' }
+    return { error: messages.auth.actions.invalidOrExpiredVerificationToken }
   }
 
   if (verificationToken.expires < new Date()) {
     await prisma.verificationToken.delete({ where: { token } })
-    return { error: 'Verification token has expired. Please request a new one.' }
+    return { error: messages.auth.actions.verificationTokenExpired }
   }
 
   await prisma.$transaction([
@@ -39,5 +42,5 @@ export async function verifyEmailAction(
     prisma.verificationToken.delete({ where: { token } }),
   ])
 
-  return { success: 'Email verified successfully! You can now sign in.' }
+  return { success: messages.auth.actions.emailVerifiedSuccessfully }
 }

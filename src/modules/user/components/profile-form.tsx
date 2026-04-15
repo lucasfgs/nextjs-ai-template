@@ -2,18 +2,21 @@
 
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
+import { useI18n } from '@/providers/i18n-provider'
 import { updateProfileAction } from '../actions/update-profile.action'
 import type { UserProfile } from '../types/user.types'
 
 function SubmitButton() {
+  const { messages } = useI18n()
   const { pending } = useFormStatus()
+
   return (
     <button
       type="submit"
       disabled={pending}
       className="bg-foreground text-background rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
     >
-      {pending ? 'Saving…' : 'Save changes'}
+      {pending ? messages.common.saving : messages.common.saveChanges}
     </button>
   )
 }
@@ -23,6 +26,7 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ user }: ProfileFormProps) {
+  const { messages } = useI18n()
   const [state, action] = useActionState(updateProfileAction, {})
 
   return (
@@ -40,7 +44,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       <div className="space-y-1">
         <label htmlFor="name" className="text-sm font-medium">
-          Full name
+          {messages.common.fullName}
         </label>
         <input
           id="name"
@@ -53,7 +57,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       <div className="space-y-1">
         <label htmlFor="email" className="text-sm font-medium">
-          Email
+          {messages.common.email}
         </label>
         <input
           id="email"
@@ -62,7 +66,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
           disabled
           className="bg-muted w-full cursor-not-allowed rounded-md border px-3 py-2 text-sm opacity-50"
         />
-        <p className="text-muted-foreground text-xs">Email cannot be changed</p>
+        <p className="text-muted-foreground text-xs">
+          {messages.profile.form.emailCannotBeChanged}
+        </p>
       </div>
 
       <SubmitButton />

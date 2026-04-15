@@ -1,14 +1,20 @@
 import type { Metadata } from 'next'
-import { pageMetadata } from '@/config/page-metadata'
+import { getPageMetadata } from '@/config/page-metadata'
+import { getRequestI18n, getRequestLocale } from '@/modules/i18n'
 import { SignInForm } from '@/modules/auth'
 
-export const metadata: Metadata = pageMetadata.signIn
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  return getPageMetadata(locale).signIn
+}
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const { messages } = await getRequestI18n()
+
   return (
     <div className="space-y-2">
-      <h2 className="text-xl font-semibold">Sign in</h2>
-      <p className="text-muted-foreground text-sm">Enter your credentials to access your account</p>
+      <h2 className="text-xl font-semibold">{messages.auth.pages.signIn.title}</h2>
+      <p className="text-muted-foreground text-sm">{messages.auth.pages.signIn.description}</p>
       <div className="pt-2">
         <SignInForm />
       </div>

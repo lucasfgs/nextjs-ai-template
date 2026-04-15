@@ -6,7 +6,9 @@
       "Bash(xargs sed:*)",
       "Bash(SKIP_ENV_VALIDATION=true npm run:*)",
       "Bash(node:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm test *)",
+      "Bash(npx jest *)"
     ]
   }
 }

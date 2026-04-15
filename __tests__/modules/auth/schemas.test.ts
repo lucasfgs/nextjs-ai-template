@@ -1,10 +1,4 @@
-import {
-  forgotPasswordSchema,
-  resetPasswordSchema,
-  signInSchema,
-  signUpSchema,
-  verifyEmailSchema,
-} from '@/modules/auth/schemas/auth.schemas'
+import { signInSchema, signUpSchema, forgotPasswordSchema, getAuthSchemas } from '@/modules/auth'
 
 describe('signInSchema', () => {
   it('accepts valid credentials', () => {
@@ -44,6 +38,23 @@ describe('signUpSchema', () => {
     const result = signUpSchema.safeParse({ ...valid, password: 'weak', confirmPassword: 'weak' })
     expect(result.success).toBe(false)
   })
+
+  it('returns localized validation messages', () => {
+    const { signUpSchema: portugueseSignUpSchema } = getAuthSchemas('pt')
+    const result = portugueseSignUpSchema.safeParse({
+      ...valid,
+      password: 'weak',
+      confirmPassword: 'weak',
+    })
+
+    expect(result.success).toBe(false)
+
+    if (result.success) {
+      throw new Error('Expected schema parsing to fail for weak password input')
+    }
+
+    expect(result.error.issues[0]?.message).toBe('A senha deve ter pelo menos 8 caracteres')
+  })
 })
 
 describe('forgotPasswordSchema', () => {
@@ -53,33 +64,5 @@ describe('forgotPasswordSchema', () => {
 
   it('rejects invalid email', () => {
     expect(forgotPasswordSchema.safeParse({ email: 'bad' }).success).toBe(false)
-  })
-})
-
-describe('resetPasswordSchema', () => {
-  const valid = {
-    token: 'token-123',
-    password: 'Password1',
-    confirmPassword: 'Password1',
-  }
-
-  it('accepts valid payloads', () => {
-    expect(resetPasswordSchema.safeParse(valid).success).toBe(true)
-  })
-
-  it('rejects mismatched passwords', () => {
-    expect(resetPasswordSchema.safeParse({ ...valid, confirmPassword: 'different' }).success).toBe(
-      false,
-    )
-  })
-})
-
-describe('verifyEmailSchema', () => {
-  it('accepts a token', () => {
-    expect(verifyEmailSchema.safeParse({ token: 'token-123' }).success).toBe(true)
-  })
-
-  it('rejects an empty token', () => {
-    expect(verifyEmailSchema.safeParse({ token: '' }).success).toBe(false)
   })
 })

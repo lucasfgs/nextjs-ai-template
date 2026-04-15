@@ -3,15 +3,20 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  dashboardMobileNavItems,
-  dashboardNavSections,
+  getDashboardMobileNavItems,
+  getDashboardNavSections,
   isActiveDashboardPath,
 } from '@/config/navigation'
 import { APP_CONFIG, ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { getLocalizedPathname } from '@/modules/i18n'
+import { useI18n } from '@/providers/i18n-provider'
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { locale, messages } = useI18n()
+  const dashboardMobileNavItems = getDashboardMobileNavItems(locale)
+  const dashboardNavSections = getDashboardNavSections(locale)
 
   return (
     <aside className="bg-background/90 sticky top-16 z-30 border-b backdrop-blur md:h-[calc(100vh-4rem)] md:w-[320px] md:flex-shrink-0 md:border-r md:border-b-0">
@@ -24,7 +29,7 @@ export function Sidebar() {
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={getLocalizedPathname(locale, item.href)}
                 className={cn(
                   'flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors',
                   active
@@ -44,7 +49,7 @@ export function Sidebar() {
         <div className="flex-1 overflow-y-auto px-4 py-5">
           <div className="space-y-6">
             {dashboardNavSections.map((section) => (
-              <div key={section.label} className="space-y-3">
+              <div key={section.key} className="space-y-3">
                 <p className="text-muted-foreground px-3 text-[11px] font-semibold tracking-[0.26em] uppercase">
                   {section.label}
                 </p>
@@ -56,7 +61,7 @@ export function Sidebar() {
                     return (
                       <Link
                         key={item.href}
-                        href={item.href}
+                        href={getLocalizedPathname(locale, item.href)}
                         className={cn(
                           'group relative flex items-start gap-3 rounded-2xl px-3 py-3.5 transition-all',
                           active
@@ -105,13 +110,13 @@ export function Sidebar() {
           <div className="border-border/70 bg-muted/30 rounded-[1.35rem] border p-4">
             <p className="text-sm font-semibold">{APP_CONFIG.NAME}</p>
             <p className="text-muted-foreground mt-2 text-sm leading-6">
-              Manage profile, security, and billing from a focused command rail.
+              {messages.layout.sidebarSummary}
             </p>
             <Link
-              href={ROUTES.DASHBOARD}
+              href={getLocalizedPathname(locale, ROUTES.DASHBOARD)}
               className="text-foreground mt-4 inline-flex text-sm font-medium hover:underline"
             >
-              Overview home
+              {messages.layout.overviewHome}
             </Link>
           </div>
         </div>

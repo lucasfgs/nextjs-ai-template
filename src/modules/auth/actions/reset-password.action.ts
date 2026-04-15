@@ -2,13 +2,16 @@
 
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-import { resetPasswordSchema } from '../schemas/auth.schemas'
+import { getRequestI18n } from '@/modules/i18n'
+import { getAuthSchemas } from '../schemas/auth.schemas'
 import type { ActionState } from '../types/auth.types'
 
 export async function resetPasswordAction(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const { locale, messages } = await getRequestI18n()
+  const { resetPasswordSchema } = getAuthSchemas(locale)
   const parsed = resetPasswordSchema.safeParse({
     token: formData.get('token'),
     password: formData.get('password'),
@@ -16,7 +19,7 @@ export async function resetPasswordAction(
   })
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+    return { error: parsed.error.issues[0]?.message ?? messages.validation.invalidInput }
   }
 
   const { token, password } = parsed.data
@@ -27,12 +30,12 @@ export async function resetPasswordAction(
   })
 
   if (!verificationToken || verificationToken.type !== 'PASSWORD_RESET') {
-    return { error: 'Invalid or expired reset token' }
+    return { error: messages.auth.actions.invalidOrExpiredResetToken }
   }
 
   if (verificationToken.expires < new Date()) {
     await prisma.verificationToken.delete({ where: { token } })
-    return { error: 'Reset token has expired. Please request a new one.' }
+    return { error: messages.auth.actions.resetTokenExpired }
   }
 
   const hashedPassword = await bcrypt.hash(password, 12)
@@ -47,5 +50,5 @@ export async function resetPasswordAction(
     prisma.session.deleteMany({ where: { userId: verificationToken.userId } }),
   ])
 
-  return { success: 'Password reset successfully. You can now sign in.' }
+  return { success: messages.auth.actions.passwordResetSuccessfully }
 }

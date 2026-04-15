@@ -1,22 +1,30 @@
-export const billingPlans = {
-  free: {
-    id: 'free',
-    name: 'Free',
-    description: 'Start with the free plan and upgrade anytime.',
-    features: ['Core app access', 'Email support'],
-  },
-  premium: {
-    id: 'premium',
-    name: 'Premium',
-    description: 'Unlock premium capabilities for growing teams.',
-    features: ['Priority support', 'Advanced workflows', 'Premium features'],
-  },
-  pro: {
-    id: 'pro',
-    name: 'Pro',
-    description: 'Best for power users who need the full experience.',
-    features: ['Everything in Premium', 'Pro features', 'Billing portal access'],
-  },
-} as const
+import { getMessages, type Locale } from '@/modules/i18n'
 
-export type BillingPlanId = keyof typeof billingPlans
+export function getBillingPlans(locale: Locale) {
+  const messages = getMessages(locale)
+
+  return {
+    free: {
+      id: 'free',
+      name: messages.billing.plans.free.name,
+      description: messages.billing.plans.free.description,
+      features: messages.billing.plans.free.features,
+    },
+    premium: {
+      id: 'premium',
+      name: messages.billing.plans.premium.name,
+      description: messages.billing.plans.premium.description,
+      features: messages.billing.plans.premium.features,
+    },
+    pro: {
+      id: 'pro',
+      name: messages.billing.plans.pro.name,
+      description: messages.billing.plans.pro.description,
+      features: messages.billing.plans.pro.features,
+    },
+  } as const
+}
+
+export const billingPlans = getBillingPlans('en')
+
+export type BillingPlanId = keyof ReturnType<typeof getBillingPlans>

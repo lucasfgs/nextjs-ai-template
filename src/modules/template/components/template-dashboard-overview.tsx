@@ -20,7 +20,12 @@ import {
 } from '@/components/ui'
 import { ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { templateContent } from '../template-content'
+import {
+  getLocaleFormattingCode,
+  getLocalizedPathname,
+  getRequestI18n,
+  interpolate,
+} from '@/modules/i18n'
 
 type TemplateDashboardUser = {
   name: string | null
@@ -41,41 +46,23 @@ type TemplateDashboardOverviewProps = {
   subscription: TemplateDashboardSubscription
 }
 
-const fullDateFormatter = new Intl.DateTimeFormat('en', {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-})
-
-const monthYearFormatter = new Intl.DateTimeFormat('en', {
-  month: 'short',
-  year: 'numeric',
-})
-
-function formatDate(date: Date | null | undefined) {
-  if (!date) return 'Not available yet'
-  return fullDateFormatter.format(date)
-}
-
-function formatMonthYear(date: Date | null | undefined) {
-  if (!date) return 'Recently'
-  return monthYearFormatter.format(date)
-}
-
-function formatEnumLabel(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (character) => character.toUpperCase())
-}
-
 function getToneClass(tone: 'good' | 'warn' | 'neutral') {
   if (tone === 'good') return 'text-emerald-700 dark:text-emerald-300'
   if (tone === 'warn') return 'text-amber-700 dark:text-amber-300'
   return 'text-muted-foreground'
 }
 
-function MiniTrendChart({ values }: { values: number[] }) {
+function MiniTrendChart({
+  values,
+  title,
+  eyebrow,
+  days,
+}: {
+  values: number[]
+  title: string
+  eyebrow: string
+  days: readonly string[]
+}) {
   const width = 320
   const height = 120
   const max = Math.max(...values)
@@ -97,8 +84,8 @@ function MiniTrendChart({ values }: { values: number[] }) {
     <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/90 p-4 text-white shadow-[0_24px_80px_-32px_rgba(15,23,42,0.9)]">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs tracking-[0.28em] text-slate-400 uppercase">Workspace pulse</p>
-          <p className="mt-1 text-lg font-semibold">Weekly activation trend</p>
+          <p className="text-xs tracking-[0.28em] text-slate-400 uppercase">{eyebrow}</p>
+          <p className="mt-1 text-lg font-semibold">{title}</p>
         </div>
         <div className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
           +18.4%
@@ -129,7 +116,7 @@ function MiniTrendChart({ values }: { values: number[] }) {
       </svg>
 
       <div className="mt-4 grid grid-cols-7 gap-2 text-xs text-slate-400">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
+        {days.map((day, index) => (
           <div key={day} className="space-y-1">
             <p>{day}</p>
             <p className="font-medium text-slate-200">{values[index]}</p>
@@ -144,10 +131,18 @@ function RadialGauge({
   value,
   label,
   tone = 'good',
+  readyLabel,
+  positiveLabel,
+  warningLabel,
+  helper,
 }: {
   value: number
   label: string
   tone?: 'good' | 'warn'
+  readyLabel: string
+  positiveLabel: string
+  warningLabel: string
+  helper: string
 }) {
   const radius = 44
   const circumference = 2 * Math.PI * radius
@@ -182,7 +177,7 @@ function RadialGauge({
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">{value}%</span>
           <span className="text-muted-foreground text-[11px] tracking-[0.22em] uppercase">
-            Ready
+            {readyLabel}
           </span>
         </div>
       </div>
@@ -190,41 +185,93 @@ function RadialGauge({
       <div className="space-y-1">
         <p className="text-sm font-medium">{label}</p>
         <p className={cn('text-sm', getToneClass(tone))}>
-          {tone === 'good' ? 'Healthy trajectory' : 'Needs attention'}
+          {tone === 'good' ? positiveLabel : warningLabel}
         </p>
-        <p className="text-muted-foreground text-sm leading-6">
-          A fast visual read on how complete the starter workspace feels right now.
-        </p>
+        <p className="text-muted-foreground text-sm leading-6">{helper}</p>
       </div>
     </div>
   )
 }
 
-export function TemplateDashboardOverview({ user, subscription }: TemplateDashboardOverviewProps) {
-  const firstName = user.name?.split(' ')[0] ?? user.email.split('@')[0] ?? 'there'
+export async function TemplateDashboardOverview({
+  user,
+  subscription,
+}: TemplateDashboardOverviewProps) {
+  const { locale, messages } = await getRequestI18n()
+  const localeCode = getLocaleFormattingCode(locale)
+  const fullDateFormatter = new Intl.DateTimeFormat(localeCode, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+  const monthYearFormatter = new Intl.DateTimeFormat(localeCode, {
+    month: 'short',
+    year: 'numeric',
+  })
+
+  const formatDate = (date: Date | null | undefined) => {
+    if (!date) return messages.common.notAvailableYet
+    return fullDateFormatter.format(date)
+  }
+
+  const formatMonthYear = (date: Date | null | undefined) => {
+    if (!date) return messages.common.recently
+    return monthYearFormatter.format(date)
+  }
+
+  const formatPlanLabel = (value: string | null | undefined) => {
+    const key = (value ?? 'FREE') as keyof typeof messages.billing.planNames
+    return messages.billing.planNames[key] ?? value ?? messages.billing.planNames.FREE
+  }
+
+  const formatSubscriptionStatus = (value: string | null | undefined) => {
+    const key = (value ?? 'INACTIVE') as keyof typeof messages.billing.subscriptionStatuses
+    return (
+      messages.billing.subscriptionStatuses[key] ??
+      value ??
+      messages.billing.subscriptionStatuses.INACTIVE
+    )
+  }
+
+  const firstName =
+    user.name?.split(' ')[0] ?? user.email.split('@')[0] ?? (locale === 'pt' ? 'você' : 'there')
   const hasPersonalizedProfile = Boolean(user.name && user.image)
   const hasActivePlan = subscription?.status === 'ACTIVE' || subscription?.status === 'TRIALING'
-  const currentPlan = formatEnumLabel(subscription?.plan ?? 'FREE')
-  const currentSubscriptionStatus = subscription ? formatEnumLabel(subscription.status) : 'Free'
+  const currentPlan = formatPlanLabel(subscription?.plan)
+  const currentSubscriptionStatus = subscription
+    ? formatSubscriptionStatus(subscription.status)
+    : messages.billing.planNames.FREE
 
   const setupChecklist = [
-    { label: 'Identity', complete: Boolean(user.name), detail: 'Profile name is set.' },
-    { label: 'Avatar', complete: Boolean(user.image), detail: 'Workspace avatar is configured.' },
     {
-      label: 'Verification',
-      complete: Boolean(user.emailVerified),
-      detail: user.emailVerified
-        ? `Verified on ${formatDate(user.emailVerified)}.`
-        : 'Email confirmation is still pending.',
+      label: messages.template.dashboard.checklist.identity.label,
+      complete: Boolean(user.name),
+      detail: messages.template.dashboard.checklist.identity.detail,
     },
     {
-      label: 'Plan',
+      label: messages.template.dashboard.checklist.avatar.label,
+      complete: Boolean(user.image),
+      detail: messages.template.dashboard.checklist.avatar.detail,
+    },
+    {
+      label: messages.template.dashboard.checklist.verification.label,
+      complete: Boolean(user.emailVerified),
+      detail: user.emailVerified
+        ? interpolate(messages.template.dashboard.checklist.verification.detailVerified, {
+            date: formatDate(user.emailVerified),
+          })
+        : messages.template.dashboard.checklist.verification.detailPending,
+    },
+    {
+      label: messages.template.dashboard.checklist.plan.label,
       complete: hasActivePlan,
       detail: hasActivePlan
         ? subscription?.currentPeriodEnd
-          ? `Active through ${formatDate(subscription.currentPeriodEnd)}.`
-          : 'Paid access is enabled.'
-        : 'Still on the starter plan.',
+          ? interpolate(messages.template.dashboard.checklist.plan.detailActiveThrough, {
+              date: formatDate(subscription.currentPeriodEnd),
+            })
+          : messages.template.dashboard.checklist.plan.detailActive
+        : messages.template.dashboard.checklist.plan.detailPending,
     },
   ]
 
@@ -233,28 +280,46 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
   const readinessTone = setupProgress >= 75 ? 'good' : 'warn'
 
   const primaryAction = hasPersonalizedProfile
-    ? { href: ROUTES.SETTINGS, label: 'Open workspace settings' }
-    : { href: ROUTES.SETTINGS_PROFILE, label: 'Complete profile' }
+    ? {
+        href: getLocalizedPathname(locale, ROUTES.SETTINGS),
+        label: messages.template.dashboard.primaryActions.openWorkspaceSettings,
+      }
+    : {
+        href: getLocalizedPathname(locale, ROUTES.SETTINGS_PROFILE),
+        label: messages.template.dashboard.primaryActions.completeProfile,
+      }
 
   const secondaryAction = hasActivePlan
-    ? { href: ROUTES.SETTINGS_BILLING, label: 'Manage billing' }
-    : { href: ROUTES.SETTINGS_BILLING, label: 'Review plans' }
+    ? {
+        href: getLocalizedPathname(locale, ROUTES.SETTINGS_BILLING),
+        label: messages.template.dashboard.primaryActions.manageBilling,
+      }
+    : {
+        href: getLocalizedPathname(locale, ROUTES.SETTINGS_BILLING),
+        label: messages.template.dashboard.primaryActions.reviewPlans,
+      }
 
   const kpis = [
     {
-      label: 'Plan',
+      label: messages.template.dashboard.kpis.plan,
       value: currentPlan,
-      note: hasActivePlan ? currentSubscriptionStatus : 'Starter access',
+      note: hasActivePlan
+        ? currentSubscriptionStatus
+        : messages.template.dashboard.kpis.starterAccess,
       icon: CreditCard,
     },
     {
-      label: 'Security',
-      value: user.emailVerified ? 'Verified' : 'Pending',
-      note: user.emailVerified ? 'Recovery ready' : 'Confirmation needed',
+      label: messages.template.dashboard.kpis.security,
+      value: user.emailVerified
+        ? messages.template.dashboard.kpis.verified
+        : messages.template.dashboard.kpis.pending,
+      note: user.emailVerified
+        ? messages.template.dashboard.kpis.recoveryReady
+        : messages.template.dashboard.kpis.confirmationNeeded,
       icon: ShieldCheck,
     },
     {
-      label: 'Member since',
+      label: messages.template.dashboard.kpis.memberSince,
       value: formatMonthYear(user.createdAt),
       note: formatDate(user.createdAt),
       icon: CalendarDays,
@@ -265,34 +330,46 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
 
   const focusItems = [
     {
-      title: hasPersonalizedProfile ? 'Profile looks polished' : 'Finish profile setup',
+      title: hasPersonalizedProfile
+        ? messages.template.dashboard.focusItems.profile.titleReady
+        : messages.template.dashboard.focusItems.profile.titlePending,
       description: hasPersonalizedProfile
-        ? 'Your account identity is already in good shape. Review details only when needed.'
-        : 'Add your name and avatar to make the product feel credible from the first screen.',
-      href: ROUTES.SETTINGS_PROFILE,
-      action: hasPersonalizedProfile ? 'Review profile' : 'Update profile',
+        ? messages.template.dashboard.focusItems.profile.descriptionReady
+        : messages.template.dashboard.focusItems.profile.descriptionPending,
+      href: getLocalizedPathname(locale, ROUTES.SETTINGS_PROFILE),
+      action: hasPersonalizedProfile
+        ? messages.template.dashboard.focusItems.profile.actionReady
+        : messages.template.dashboard.focusItems.profile.actionPending,
       tone: hasPersonalizedProfile ? 'good' : 'warn',
       icon: UserRound,
     },
     {
-      title: hasActivePlan ? 'Billing is healthy' : 'Choose a paid plan',
+      title: hasActivePlan
+        ? messages.template.dashboard.focusItems.billing.titleReady
+        : messages.template.dashboard.focusItems.billing.titlePending,
       description: hasActivePlan
         ? subscription?.currentPeriodEnd
-          ? `Your subscription is active through ${formatDate(subscription.currentPeriodEnd)}.`
-          : 'Your plan is active and ready for more advanced workflows.'
-        : 'Upgrade when you want the template to represent a more mature commercial product.',
-      href: ROUTES.SETTINGS_BILLING,
-      action: hasActivePlan ? 'Open billing' : 'Explore plans',
+          ? interpolate(messages.template.dashboard.focusItems.billing.descriptionReadyWithDate, {
+              date: formatDate(subscription.currentPeriodEnd),
+            })
+          : messages.template.dashboard.focusItems.billing.descriptionReady
+        : messages.template.dashboard.focusItems.billing.descriptionPending,
+      href: getLocalizedPathname(locale, ROUTES.SETTINGS_BILLING),
+      action: hasActivePlan
+        ? messages.template.dashboard.focusItems.billing.actionReady
+        : messages.template.dashboard.focusItems.billing.actionPending,
       tone: hasActivePlan ? 'good' : 'neutral',
       icon: CreditCard,
     },
     {
-      title: user.emailVerified ? 'Trust signals are strong' : 'Complete email verification',
+      title: user.emailVerified
+        ? messages.template.dashboard.focusItems.verification.titleReady
+        : messages.template.dashboard.focusItems.verification.titlePending,
       description: user.emailVerified
-        ? 'Email verification is already done, which improves account trust and recovery.'
-        : 'Finishing verification makes the workspace feel production-ready and safer to demo.',
-      href: ROUTES.SETTINGS_SECURITY,
-      action: 'Open security',
+        ? messages.template.dashboard.focusItems.verification.descriptionReady
+        : messages.template.dashboard.focusItems.verification.descriptionPending,
+      href: getLocalizedPathname(locale, ROUTES.SETTINGS_SECURITY),
+      action: messages.template.dashboard.focusItems.verification.action,
       tone: user.emailVerified ? 'good' : 'warn',
       icon: ShieldCheck,
     },
@@ -309,7 +386,7 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
                   variant="secondary"
                   className="rounded-full border border-sky-200/70 bg-sky-50 px-3 py-1 text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200"
                 >
-                  Executive overview
+                  {messages.template.dashboard.executiveOverview}
                 </Badge>
                 <Badge
                   variant="outline"
@@ -320,23 +397,25 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
                       : 'border-amber-500/25 bg-amber-500/8 text-amber-700 dark:text-amber-300',
                   )}
                 >
-                  {user.emailVerified ? 'Email verified' : 'Verification pending'}
+                  {user.emailVerified
+                    ? messages.template.dashboard.emailVerified
+                    : messages.template.dashboard.verificationPending}
                 </Badge>
               </div>
 
               <div className="max-w-3xl space-y-4">
                 <div className="space-y-3">
                   <p className="text-muted-foreground text-xs font-medium tracking-[0.3em] uppercase">
-                    Workspace status
+                    {messages.template.dashboard.workspaceStatus}
                   </p>
                   <h1 className="max-w-2xl text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">
-                    Welcome back, {firstName}
+                    {interpolate(messages.template.dashboard.welcomeBack, { name: firstName })}
                   </h1>
                 </div>
                 <p className="text-muted-foreground max-w-2xl text-base leading-8">
                   {setupProgress === 100
-                    ? templateContent.dashboard.completionMessage
-                    : templateContent.dashboard.inProgressMessage}
+                    ? messages.template.dashboard.completionMessage
+                    : messages.template.dashboard.inProgressMessage}
                 </p>
               </div>
 
@@ -378,7 +457,12 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
             </div>
 
             <div className="border-border/60 border-t bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.18),_transparent_42%),linear-gradient(180deg,rgba(15,23,42,0.02),rgba(15,23,42,0.08))] p-6 sm:p-8 xl:border-t-0 xl:border-l">
-              <MiniTrendChart values={trendValues} />
+              <MiniTrendChart
+                values={trendValues}
+                eyebrow={messages.template.dashboard.trend.eyebrow}
+                title={messages.template.dashboard.trend.title}
+                days={messages.template.dashboard.trend.days}
+              />
             </div>
           </div>
         </CardContent>
@@ -391,15 +475,17 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-1">
                   <CardTitle className="text-[1.65rem] tracking-tight">
-                    Readiness overview
+                    {messages.template.dashboard.readiness.title}
                   </CardTitle>
                   <CardDescription>
-                    A tighter view of the few signals that make the starter workspace feel
-                    production-ready.
+                    {messages.template.dashboard.readiness.description}
                   </CardDescription>
                 </div>
                 <div className="rounded-full border px-3 py-1 text-sm font-medium">
-                  {completedSetupSteps} of {setupChecklist.length} complete
+                  {interpolate(messages.template.dashboard.readiness.completed, {
+                    completed: completedSetupSteps,
+                    total: setupChecklist.length,
+                  })}
                 </div>
               </div>
             </CardHeader>
@@ -407,8 +493,12 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
               <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)]">
                 <RadialGauge
                   value={setupProgress}
-                  label="Workspace readiness"
+                  label={messages.template.dashboard.readiness.label}
                   tone={readinessTone}
+                  readyLabel={messages.template.dashboard.readiness.ready}
+                  positiveLabel={messages.template.dashboard.readiness.healthyTrajectory}
+                  warningLabel={messages.template.dashboard.readiness.needsAttention}
+                  helper={messages.template.dashboard.readiness.helper}
                 />
 
                 <div className="grid gap-3">
@@ -442,7 +532,7 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
                                 : 'text-muted-foreground',
                             )}
                           >
-                            {step.complete ? 'Complete' : 'Pending'}
+                            {step.complete ? messages.common.complete : messages.common.pending}
                           </span>
                         </div>
                         <p className="text-muted-foreground mt-1 text-sm leading-6">
@@ -461,11 +551,10 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <CardTitle className="text-[1.5rem] tracking-tight">
-                    Activation momentum
+                    {messages.template.dashboard.activation.title}
                   </CardTitle>
                   <CardDescription>
-                    A simple distribution chart to give the starter dashboard a more credible
-                    analytics surface.
+                    {messages.template.dashboard.activation.description}
                   </CardDescription>
                 </div>
                 <TrendingUp className="text-muted-foreground h-5 w-5" />
@@ -474,21 +563,25 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
             <CardContent className="space-y-5">
               {[
                 {
-                  label: 'Identity complete',
+                  label: messages.template.dashboard.activation.identityComplete,
                   value: hasPersonalizedProfile ? 86 : 46,
                   tone: 'bg-sky-500',
                 },
                 {
-                  label: 'Security trust',
+                  label: messages.template.dashboard.activation.securityTrust,
                   value: user.emailVerified ? 92 : 54,
                   tone: 'bg-emerald-500',
                 },
                 {
-                  label: 'Commercial readiness',
+                  label: messages.template.dashboard.activation.commercialReadiness,
                   value: hasActivePlan ? 78 : 38,
                   tone: 'bg-violet-500',
                 },
-                { label: 'Workspace polish', value: setupProgress, tone: 'bg-amber-500' },
+                {
+                  label: messages.template.dashboard.activation.workspacePolish,
+                  value: setupProgress,
+                  tone: 'bg-amber-500',
+                },
               ].map((metric) => (
                 <div key={metric.label} className="space-y-2">
                   <div className="flex items-center justify-between gap-3 text-sm">
@@ -510,10 +603,11 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
         <div className="space-y-6">
           <Card className="border-border/70 shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]">
             <CardHeader className="pb-4">
-              <CardTitle className="text-[1.5rem] tracking-tight">Priority queue</CardTitle>
+              <CardTitle className="text-[1.5rem] tracking-tight">
+                {messages.template.dashboard.priorityQueue.title}
+              </CardTitle>
               <CardDescription>
-                Keep the starter focused on a few high-signal actions instead of a long list of
-                generic widgets.
+                {messages.template.dashboard.priorityQueue.description}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -539,10 +633,10 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
                             )}
                           >
                             {item.tone === 'good'
-                              ? 'Healthy'
+                              ? messages.common.healthy
                               : item.tone === 'warn'
-                                ? 'Action needed'
-                                : 'Optional'}
+                                ? messages.common.actionNeeded
+                                : messages.common.optional}
                           </span>
                         </div>
                         <p className="text-muted-foreground mt-2 text-sm leading-6">
@@ -564,20 +658,26 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
 
           <Card className="border-border/70 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.95)]">
             <CardHeader className="pb-4">
-              <CardTitle className="text-[1.45rem] tracking-tight text-white">Snapshot</CardTitle>
+              <CardTitle className="text-[1.45rem] tracking-tight text-white">
+                {messages.template.dashboard.snapshot.title}
+              </CardTitle>
               <CardDescription className="text-slate-300">
-                A tighter summary panel that feels more premium than another row of starter cards.
+                {messages.template.dashboard.snapshot.description}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs tracking-[0.24em] text-slate-400 uppercase">Plan status</p>
+                  <p className="text-xs tracking-[0.24em] text-slate-400 uppercase">
+                    {messages.template.dashboard.snapshot.planStatus}
+                  </p>
                   <p className="mt-4 text-2xl font-semibold">{currentPlan}</p>
                   <p className="mt-1 text-sm text-slate-300">{currentSubscriptionStatus}</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs tracking-[0.24em] text-slate-400 uppercase">Member since</p>
+                  <p className="text-xs tracking-[0.24em] text-slate-400 uppercase">
+                    {messages.template.dashboard.snapshot.memberSince}
+                  </p>
                   <p className="mt-4 text-2xl font-semibold">{formatMonthYear(user.createdAt)}</p>
                   <p className="mt-1 text-sm text-slate-300">{formatDate(user.createdAt)}</p>
                 </div>
@@ -587,20 +687,20 @@ export function TemplateDashboardOverview({ user, subscription }: TemplateDashbo
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs tracking-[0.24em] text-slate-400 uppercase">
-                      Operator note
+                      {messages.template.dashboard.snapshot.operatorNote}
                     </p>
                     <p className="mt-2 text-lg font-semibold">
                       {hasActivePlan
-                        ? 'Commercial setup is in good shape.'
-                        : 'The template is still in starter mode.'}
+                        ? messages.template.dashboard.snapshot.healthyTitle
+                        : messages.template.dashboard.snapshot.pendingTitle}
                     </p>
                   </div>
                   <Sparkles className="h-5 w-5 text-cyan-300" />
                 </div>
                 <p className="mt-3 text-sm leading-7 text-slate-300">
                   {hasActivePlan
-                    ? 'Billing is active, trust signals are solid, and the dashboard can now act more like a polished SaaS home.'
-                    : 'Once profile, verification, and billing are complete, this surface reads much more like a finished product than a scaffold.'}
+                    ? messages.template.dashboard.snapshot.healthyDescription
+                    : messages.template.dashboard.snapshot.pendingDescription}
                 </p>
               </div>
             </CardContent>

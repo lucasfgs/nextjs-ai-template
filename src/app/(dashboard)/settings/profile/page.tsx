@@ -1,24 +1,28 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { pageMetadata } from '@/config/page-metadata'
+import { getPageMetadata } from '@/config/page-metadata'
+import { ROUTES } from '@/lib/constants'
+import { getLocalizedPathname, getRequestI18n, getRequestLocale } from '@/modules/i18n'
 import { auth } from '@/modules/auth'
-import { userService } from '@/modules/user'
-import { ProfileForm } from '@/modules/user'
+import { ProfileForm, userService } from '@/modules/user'
 
-export const metadata: Metadata = pageMetadata.settingsProfile
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  return getPageMetadata(locale).settingsProfile
+}
 
 export default async function ProfileSettingsPage() {
-  const session = await auth()
-  if (!session?.user?.id) redirect('/sign-in')
+  const [session, { locale, messages }] = await Promise.all([auth(), getRequestI18n()])
+  if (!session?.user?.id) redirect(getLocalizedPathname(locale, ROUTES.SIGN_IN))
 
   const user = await userService.getProfile(session.user.id)
-  if (!user) redirect('/sign-in')
+  if (!user) redirect(getLocalizedPathname(locale, ROUTES.SIGN_IN))
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Profile</h1>
-        <p className="text-muted-foreground">Update your personal information</p>
+        <h1 className="text-2xl font-bold">{messages.profile.page.title}</h1>
+        <p className="text-muted-foreground">{messages.profile.page.description}</p>
       </div>
       <div className="max-w-md">
         <ProfileForm user={user} />
