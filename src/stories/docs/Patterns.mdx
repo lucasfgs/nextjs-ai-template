@@ -1,0 +1,130 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Textarea,
+} from '@/components/ui'
+import { DoDont, PageLead } from './docs-components'
+
+<Meta title="Style Guide/Patterns" />
+
+<PageLead
+  eyebrow="Usage guidance"
+  title="Patterns"
+  description="Patterns show how the shared primitives should be composed in real product surfaces. Prefer predictable layouts and semantic tokens over ad-hoc wrappers so screens stay easy to extend, theme, and test."
+/>
+
+## Form stack
+
+<Card className="shadow-elevation-sm">
+  <CardHeader>
+    <CardTitle>Workspace profile</CardTitle>
+    <CardDescription>
+      Use a vertical stack with explicit labels, helper text, and one primary action.
+    </CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-stack">
+    <div className="gap-stack-sm grid">
+      <Label htmlFor="workspace-name">Workspace name</Label>
+      <Input id="workspace-name" placeholder="Acme Labs" />
+    </div>
+    <div className="gap-stack-sm grid">
+      <Label htmlFor="workspace-description">Description</Label>
+      <Textarea id="workspace-description" placeholder="What is this workspace for?" />
+      <p className="text-muted-foreground text-sm">
+        Keep helper copy close to the field it supports.
+      </p>
+    </div>
+    <div className="flex justify-end gap-3">
+      <Button variant="outline">Cancel</Button>
+      <Button>Save changes</Button>
+    </div>
+  </CardContent>
+</Card>
+
+## Settings summary surface
+
+<Card className="shadow-elevation-sm mt-6">
+  <CardHeader className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <div className="space-y-1">
+      <CardTitle>Billing posture</CardTitle>
+      <CardDescription>
+        Pair a short status summary with lightweight metadata and direct follow-up actions.
+      </CardDescription>
+    </div>
+    <Badge variant="secondary" className="w-fit rounded-full px-3 py-1">
+      Healthy
+    </Badge>
+  </CardHeader>
+  <CardContent className="space-y-stack">
+    <div className="grid gap-4 md:grid-cols-3">
+      <div className="rounded-xl border p-4">
+        <p className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase">Plan</p>
+        <p className="mt-3 text-lg font-semibold">Pro</p>
+      </div>
+      <div className="rounded-xl border p-4">
+        <p className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase">
+          Renewal
+        </p>
+        <p className="mt-3 text-lg font-semibold">May 15</p>
+      </div>
+      <div className="rounded-xl border p-4">
+        <p className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase">
+          Seats
+        </p>
+        <p className="mt-3 text-lg font-semibold">12 active</p>
+      </div>
+    </div>
+    <div className="flex flex-wrap gap-3">
+      <Button>Manage billing</Button>
+      <Button variant="outline">View invoices</Button>
+    </div>
+  </CardContent>
+</Card>
+
+## Inline operational feedback
+
+<Alert className="shadow-elevation-sm mt-6">
+  <AlertTitle>Action needed</AlertTitle>
+  <AlertDescription className="space-y-3">
+    <p>
+      Your workspace is almost ready, but email verification is still pending. Inline alerts should
+      explain the issue and immediately offer a next step.
+    </p>
+    <div className="flex flex-wrap gap-3">
+      <Button size="sm">Send reminder</Button>
+      <Button size="sm" variant="outline">
+        Review security settings
+      </Button>
+    </div>
+  </AlertDescription>
+</Alert>
+
+## Composition guidance
+
+<DoDont
+  doTitle="Compose from shared building blocks"
+  doBody={
+    <>
+      Start with `Card`, `Label`, `Input`, `Alert`, `Badge`, and `Button`, then layer layout tokens
+      like `gap-stack` and `shadow-elevation-sm` to create predictable product surfaces.
+    </>
+  }
+  dontTitle="Invent a new layout grammar for every screen"
+  dontBody={
+    <>
+      Avoid copy-pasting one-off wrappers with hard-coded colors, spacing, or shadow values. That
+      makes theming harder and Storybook less useful as a reference.
+    </>
+  }
+/>

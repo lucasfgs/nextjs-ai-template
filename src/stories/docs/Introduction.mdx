@@ -1,64 +1,87 @@
 import { Meta } from '@storybook/addon-docs/blocks'
+import { Checklist, PageLead, RuleGrid } from './docs-components'
 
-<Meta title="Documentation/Introduction" />
+<Meta title="Style Guide/Introduction" />
 
-# Design System
+<PageLead
+  eyebrow="Style Guide"
+  title="AI Template Design System"
+  description="Use this Storybook as the operational reference for foundations, shared components, composition patterns, accessibility expectations, and contribution rules. The same tokens and primitives power the real Next.js app, so what you validate here should match production UI behavior."
+>
+  <RuleGrid
+    columns={3}
+    items={[
+      {
+        title: 'Foundations first',
+        body: 'Start with semantic tokens in `src/app/globals.css`. Color, spacing, radius, and elevation are documented before component-level guidance so branding and layout decisions stay consistent.',
+      },
+      {
+        title: 'Components as the API',
+        body: 'Shared UI primitives live in `src/components/ui/` and each component should have a co-located Storybook story. Treat those stories as the living contract for variants, states, and accessibility behaviors.',
+      },
+      {
+        title: 'Governance built in',
+        body: 'This guide also records contribution rules, validation commands, and theming constraints so downstream template consumers can customize the product without fracturing the shared system.',
+      },
+    ]}
+  />
+</PageLead>
 
-Welcome to the **nextjs-ai-template** design system. This Storybook documents every UI component, design token, and pattern used in the project.
+## Where the style guide lives
 
-## Overview
+<Checklist
+  items={[
+    <>
+      <strong>`src/app/globals.css`</strong> — single source of truth for semantic design tokens,
+      theme aliases, and base styling primitives.
+    </>,
+    <>
+      <strong>`src/components/ui/*.stories.tsx`</strong> — co-located component stories for
+      canonical variants, states, and composition examples.
+    </>,
+    <>
+      <strong>`src/stories/docs/`</strong> — narrative documentation for foundations, patterns,
+      theming, accessibility, and contribution workflow.
+    </>,
+    <>
+      <strong>`README.md` and `CLAUDE.md`</strong> — repo-facing instructions for human contributors
+      and AI agents who need to extend the system responsibly.
+    </>,
+  ]}
+/>
 
-This design system is built on three pillars:
+## Information architecture
 
-- **Radix UI primitives** — unstyled, accessible components that handle keyboard navigation, ARIA attributes, and focus management out of the box.
-- **Tailwind CSS v4** — CSS-first utility framework. All design tokens are CSS custom properties defined in `src/app/globals.css`.
-- **Class Variance Authority (CVA)** — type-safe component variants with full TypeScript autocompletion.
+<RuleGrid
+  items={[
+    {
+      title: 'Foundations',
+      body: 'Design Tokens, Typography, and Spacing & Elevation explain the semantic tokens and default presentation language used across the app.',
+    },
+    {
+      title: 'Usage guidance',
+      body: 'Theming, Components, and Patterns show how to apply the system in product code instead of treating Storybook as a disconnected showcase.',
+    },
+    {
+      title: 'Quality guardrails',
+      body: 'Accessibility and Contribution Rules define the baseline expected for every new component, story, and branding change.',
+    },
+    {
+      title: 'Story roots',
+      body: 'Browse `Forms`, `Navigation`, `Overlays`, `Feedback`, and `UI` in the sidebar when you want the implementation details for a specific primitive.',
+    },
+  ]}
+/>
 
-## Getting started
+## Recommended workflow
 
-### Running Storybook
-
-```bash
-npm run storybook
-```
-
-Open [http://localhost:6006](http://localhost:6006).
-
-### Adding new components
-
-Use the shadcn/ui CLI to scaffold a new component into `src/components/ui/`:
-
-```bash
-npx shadcn add <component-name>
-```
-
-The `components.json` at the project root is pre-configured for this project's directory structure and Tailwind v4 CSS variables.
-
-### Importing components
-
-All components are re-exported from the barrel:
-
-```tsx
-import { Button, Badge, Card } from '@/components/ui'
-```
-
-Or import directly from the component file:
-
-```tsx
-import { Button } from '@/components/ui/button'
-```
-
-## Design tokens
-
-All visual properties are CSS custom properties. See the **Design Tokens** page for the full palette, plus instructions on how to override them for white-labelling.
-
-## Theming
-
-The dark/light mode toggle in the Storybook toolbar (☀ / 🌙) applies `class="dark"` to the preview `<html>` element — exactly how `next-themes` works in the real application.
-
-## Component conventions
-
-- Every component accepts a `className` prop for one-off overrides.
-- Interactive components use `forwardRef` so they integrate with React Hook Form.
-- Compound components (Card, Dialog, etc.) are exported as named exports from one file.
-- Icon-only buttons: use `size="icon"` and wrap the icon with `<span className="sr-only">` for accessibility.
+1. **Choose or add semantic tokens first.** Prefer `bg-primary`, `text-muted-foreground`,
+   `shadow-elevation-md`, or `px-layout` over one-off values.
+2. **Compose from existing primitives.** Reach for `Card`, `Button`, `Input`, `Alert`, `Dialog`, and
+   other shared pieces before introducing new wrappers.
+3. **Capture states in Storybook.** Every reusable primitive should show its default, important
+   variants, empty/loading/disabled states, and at least one realistic composition example.
+4. **Document behavior, not just visuals.** Add accessibility notes, theming implications, and
+   contribution guidance when conventions change.
+5. **Validate before merging.** Run the repository checks listed in the Contribution Rules page so
+   the app, Storybook, and template docs stay aligned.

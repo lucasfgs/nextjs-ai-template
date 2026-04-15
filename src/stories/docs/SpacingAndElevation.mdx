@@ -1,0 +1,204 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { PageLead, RuleGrid, TokenGrid } from './docs-components'
+
+<Meta title="Style Guide/Foundations/Spacing & Elevation" />
+
+<PageLead
+  eyebrow="Foundations"
+  title="Spacing, radius, and elevation"
+  description="Tailwind's default scale remains available, but this template adds semantic tokens for recurring layout roles. Use layout and stack tokens for predictable spacing, shared radius aliases for shape consistency, and named elevation tokens for surface depth."
+/>
+
+## Semantic spacing tokens
+
+<TokenGrid
+  items={[
+    {
+      name: 'Layout',
+      variable: '--spacing-layout',
+      utility: 'px-layout / gap-layout',
+      value: '1rem',
+      description: 'Default page gutter and compact horizontal padding for dashboard sections.',
+      preview: (
+        <div className="rounded-xl border p-4">
+          <div className="bg-primary h-3 rounded-full" style={{ width: 'var(--spacing-layout)' }} />
+        </div>
+      ),
+    },
+    {
+      name: 'Layout large',
+      variable: '--spacing-layout-lg',
+      utility: 'px-layout-lg / gap-layout-lg',
+      value: '1.5rem',
+      description: 'Expanded gutter for wider desktop shells and roomy settings surfaces.',
+      preview: (
+        <div className="rounded-xl border p-4">
+          <div
+            className="bg-primary h-3 rounded-full"
+            style={{ width: 'var(--spacing-layout-lg)' }}
+          />
+        </div>
+      ),
+    },
+    {
+      name: 'Section',
+      variable: '--spacing-section',
+      utility: 'py-section / gap-section',
+      value: '2rem',
+      description: 'Vertical rhythm between major content blocks or stacked cards.',
+      preview: (
+        <div className="rounded-xl border p-4">
+          <div
+            className="bg-primary h-3 rounded-full"
+            style={{ width: 'var(--spacing-section)' }}
+          />
+        </div>
+      ),
+    },
+    {
+      name: 'Section large',
+      variable: '--spacing-section-lg',
+      utility: 'py-section-lg / gap-section-lg',
+      value: '3rem',
+      description:
+        'Use for hero sections, roomy onboarding surfaces, or pages with fewer but larger modules.',
+      preview: (
+        <div className="rounded-xl border p-4">
+          <div
+            className="bg-primary h-3 rounded-full"
+            style={{ width: 'var(--spacing-section-lg)' }}
+          />
+        </div>
+      ),
+    },
+    {
+      name: 'Stack small',
+      variable: '--spacing-stack-sm',
+      utility: 'gap-stack-sm / space-y-stack-sm',
+      value: '0.75rem',
+      description: 'Compact internal spacing for labels, metadata groups, and dense card headers.',
+      preview: (
+        <div className="space-y-2 rounded-xl border p-4">
+          <div className="bg-muted h-2 rounded-full" />
+          <div
+            className="bg-primary h-2 rounded-full"
+            style={{ width: 'var(--spacing-stack-sm)' }}
+          />
+        </div>
+      ),
+    },
+    {
+      name: 'Stack',
+      variable: '--spacing-stack',
+      utility: 'gap-stack / space-y-stack',
+      value: '1rem',
+      description: 'Default internal spacing for form fields, card content, and grouped controls.',
+      preview: (
+        <div className="space-y-3 rounded-xl border p-4">
+          <div className="bg-muted h-2 rounded-full" />
+          <div className="bg-primary h-2 rounded-full" style={{ width: 'var(--spacing-stack)' }} />
+        </div>
+      ),
+    },
+  ]}
+/>
+
+## Radius scale
+
+<TokenGrid
+  items={[
+    {
+      name: 'Rounded sm',
+      variable: '--radius-sm',
+      utility: 'rounded-sm',
+      value: 'calc(var(--radius) - 4px)',
+      description: 'For compact chips, tiny badges, and tight form affordances.',
+      preview: <div className="bg-card h-20 border" style={{ borderRadius: 'var(--radius-sm)' }} />,
+    },
+    {
+      name: 'Rounded md',
+      variable: '--radius-md',
+      utility: 'rounded-md',
+      value: 'calc(var(--radius) - 2px)',
+      description: 'Default control radius for buttons, inputs, and compact surfaces.',
+      preview: <div className="bg-card h-20 border" style={{ borderRadius: 'var(--radius-md)' }} />,
+    },
+    {
+      name: 'Rounded xl',
+      variable: '--radius-xl',
+      utility: 'rounded-xl',
+      value: 'calc(var(--radius) + 4px)',
+      description: 'Use for cards, dashboard modules, and larger grouped surfaces.',
+      preview: <div className="bg-card h-20 border" style={{ borderRadius: 'var(--radius-xl)' }} />,
+    },
+  ]}
+/>
+
+## Elevation tokens
+
+<TokenGrid
+  items={[
+    {
+      name: 'Elevation sm',
+      variable: '--shadow-elevation-sm',
+      utility: 'shadow-elevation-sm',
+      value: 'Base surface lift',
+      description: 'Appropriate for cards that should separate gently from the background.',
+      preview: (
+        <div
+          className="bg-card h-24 rounded-2xl border"
+          style={{ boxShadow: 'var(--shadow-elevation-sm)' }}
+        />
+      ),
+    },
+    {
+      name: 'Elevation md',
+      variable: '--shadow-elevation-md',
+      utility: 'shadow-elevation-md',
+      value: 'Prominent content surface',
+      description: 'Use for feature cards, summary panels, and emphasized blocks.',
+      preview: (
+        <div
+          className="bg-card h-24 rounded-2xl border"
+          style={{ boxShadow: 'var(--shadow-elevation-md)' }}
+        />
+      ),
+    },
+    {
+      name: 'Elevation overlay',
+      variable: '--shadow-elevation-overlay',
+      utility: 'shadow-elevation-overlay',
+      value: 'Modal and floating surface depth',
+      description: 'Best for dialogs, floating inspectors, or spotlight-style components.',
+      preview: (
+        <div
+          className="bg-card h-24 rounded-2xl border"
+          style={{ boxShadow: 'var(--shadow-elevation-overlay)' }}
+        />
+      ),
+    },
+  ]}
+/>
+
+## Guidance
+
+<RuleGrid
+  items={[
+    {
+      title: 'Use semantic spacing for recurring roles',
+      body: 'Reach for `px-layout`, `py-section`, and `gap-stack` when the spacing communicates structure, not just a one-off tweak.',
+    },
+    {
+      title: 'Keep shape changes intentional',
+      body: 'Most primitives should stay within the shared radius scale so the interface feels like one product, not a collection of unrelated widgets.',
+    },
+    {
+      title: 'Elevate by hierarchy, not habit',
+      body: 'Reserve stronger shadows for surfaces that truly need separation. Too many elevated panels flatten visual hierarchy.',
+    },
+    {
+      title: 'Tailwind defaults still help',
+      body: 'The default Tailwind spacing scale is still available for implementation details. Prefer semantic tokens whenever a spacing role repeats across the product.',
+    },
+  ]}
+/>

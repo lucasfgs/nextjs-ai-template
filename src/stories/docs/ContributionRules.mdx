@@ -1,0 +1,72 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Checklist, PageLead, RuleGrid } from './docs-components'
+
+<Meta title="Style Guide/Contribution Rules" />
+
+<PageLead
+  eyebrow="Quality guardrails"
+  title="Contribution rules"
+  description="The style guide is only useful if implementation, Storybook, and repo-facing docs stay in sync. Use these rules whenever you add a token, adjust a shared primitive, or expand the design-system surface for downstream template consumers."
+/>
+
+## Required workflow
+
+<RuleGrid
+  items={[
+    {
+      title: '1. Update tokens at the source',
+      body: 'Add or refine semantic tokens in `src/app/globals.css` instead of scattering raw values through component classes.',
+    },
+    {
+      title: '2. Keep primitives in `src/components/ui/`',
+      body: 'New shared components belong with the rest of the UI library and should continue following the existing shadcn-style conventions.',
+    },
+    {
+      title: '3. Co-locate stories',
+      body: 'Every shared primitive needs a nearby `*.stories.tsx` file that documents its variants, states, and accessibility expectations.',
+    },
+    {
+      title: '4. Update narrative docs when conventions change',
+      body: 'If a change affects design language, theming, accessibility, or workflow, refresh the relevant MDX page plus README/CLAUDE guidance in the same task.',
+    },
+  ]}
+/>
+
+## Definition of done for shared UI work
+
+<Checklist
+  items={[
+    <>
+      The component uses <strong>semantic tokens</strong> instead of hard-coded brand values.
+    </>,
+    <>
+      Storybook shows the <strong>default state</strong>, meaningful variants, and at least one
+      realistic composition example.
+    </>,
+    <>
+      Accessibility concerns such as labels, focus styles, and keyboard interaction are documented
+      or visible in stories.
+    </>,
+    <>
+      Relevant docs in <strong>`src/stories/docs/`</strong>, <strong>`README.md`</strong>, and
+      <strong>`CLAUDE.md`</strong> stay aligned.
+    </>,
+  ]}
+/>
+
+## Validation checklist
+
+```bash
+npm run lint
+npm run typecheck
+npm run storybook:build
+npm run validate:template
+```
+
+## Preferred addition path
+
+1. Try to compose the new experience from existing primitives first.
+2. If reuse justifies a new primitive, place it in `src/components/ui/`.
+3. Add or expand co-located stories immediately.
+4. Update style-guide docs if new tokens, patterns, or contribution rules were introduced.
+5. Re-run validation before handing the change off.

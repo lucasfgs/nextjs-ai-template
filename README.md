@@ -9,7 +9,7 @@ projects. It emphasizes:
 - validated environment configuration
 - edge-safe authentication architecture
 - reusable email templates
-- Storybook-driven UI documentation
+- Storybook-driven UI documentation and style-guide coverage
 - AI-friendly project context for autonomous coding agents
 
 ## What’s inside
@@ -20,7 +20,7 @@ projects. It emphasizes:
 - Tailwind CSS v4 with shadcn/ui-style primitives
 - Resend email service and React Email templates
 - TanStack Query, Zustand, and React Hook Form for client interactions
-- Jest and Storybook for baseline quality and UI review
+- Jest and Storybook for baseline quality, component review, and style-guide docs
 
 ## Repository map
 
@@ -39,6 +39,22 @@ projects. It emphasizes:
   - `route-map.json` — public, protected, and API route inventory
   - `module-boundaries.json` — import boundary contract and exceptions
   - `customization-checklist.json` — required template handoff steps
+
+## Style guide and Storybook
+
+The repository includes a full style-guide surface that is meant to evolve with the app:
+
+- `src/app/globals.css` — semantic tokens for color, spacing, radius, and elevation
+- `src/components/ui/*.stories.tsx` — co-located stories for shared primitives
+- `src/stories/docs/` — narrative Storybook docs for foundations, theming, patterns, accessibility, and contribution rules
+- `src/stories/docs/docs-components.tsx` — reusable docs-only building blocks for token swatches, rule cards, and checklists
+
+When extending the shared UI library:
+
+1. Prefer semantic tokens over hard-coded values.
+2. Add or update a co-located Storybook story with canonical states.
+3. Refresh the relevant docs page in `src/stories/docs/` if conventions changed.
+4. Keep `README.md` and `CLAUDE.md` aligned with any workflow updates.
 
 ## Getting started
 
@@ -164,6 +180,7 @@ If Resend is not configured, email sends fail gracefully with a clear message.
 3. Add feature modules under `src/modules/<feature>/`.
 4. Extend navigation in `src/config/navigation.ts`.
 5. Update docs in `README.md`, `CLAUDE.md`, and `.agent-platform/` together.
+6. Adjust branding through semantic tokens in `src/app/globals.css` before rewriting component classes.
 
 ## Available scripts
 
@@ -183,6 +200,15 @@ npm run db:seed
 npm run db:generate
 ```
 
+## Validation workflow for shared UI changes
+
+```bash
+npm run lint
+npm run typecheck
+npm run storybook:build
+npm run validate:template
+```
+
 ## Notes for AI agents
 
 - Keep business logic out of `src/app/`.
@@ -191,6 +217,7 @@ npm run db:generate
 - Prefer Server Components unless client state is required.
 - Preserve the edge-safe auth split when modifying proxy or auth flows.
 - Replace starter screens inside `src/modules/template/` instead of growing example UI inside `src/app/`.
+- When modifying shared UI, keep tokens, component stories, and Storybook docs in sync.
 
 ## How to customize this template
 
@@ -199,3 +226,4 @@ npm run db:generate
 - Update product metadata and shared defaults in `src/lib/constants.ts`.
 - Replace or remove the starter screens in `src/modules/template/` as your product takes shape.
 - Keep agent-facing instructions in `.agent-platform/` and `CLAUDE.md` in sync.
+- Customize branding through semantic tokens in `src/app/globals.css` so Storybook and the app stay aligned.

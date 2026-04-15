@@ -45,6 +45,8 @@ src/
   hooks/         — Global shared React hooks.
   env.ts         — Single source of truth for all environment variables.
   proxy.ts       — Edge-safe auth guards + redirects (imports auth config only).
+  stories/
+    docs/        — Storybook MDX style-guide docs and docs-only helper components.
 ```
 
 ## Module Structure Rule
@@ -141,6 +143,13 @@ All UI primitives live in `src/components/ui/`. They follow the shadcn/ui conven
 - Variants defined via **CVA** (class-variance-authority)
 - All accept `className` for overrides and use `forwardRef`
 
+### Style-guide source of truth
+
+- `src/app/globals.css` is the source of truth for semantic color, spacing, radius, and elevation tokens.
+- `src/components/ui/*.stories.tsx` holds co-located component stories.
+- `src/stories/docs/` contains MDX documentation for foundations, theming, patterns, accessibility, and contribution rules.
+- `src/stories/docs/docs-components.tsx` contains docs-only helper components for Storybook documentation pages.
+
 ### Adding a new component
 
 ```bash
@@ -169,6 +178,14 @@ npm run storybook:build  # static export to storybook-static/
 Stories live co-located with components: `src/components/ui/button.stories.tsx`.
 MDX documentation pages live in `src/stories/docs/`.
 
+### Shared UI workflow
+
+1. Prefer semantic tokens like `bg-card`, `text-muted-foreground`, `shadow-elevation-md`, and `px-layout` over hard-coded values.
+2. Compose from existing shared primitives before creating a new design-system API surface.
+3. Add or update a co-located Storybook story whenever a shared primitive changes.
+4. Refresh `src/stories/docs/`, `README.md`, and `CLAUDE.md` when shared conventions change.
+5. Validate with `npm run lint`, `npm run typecheck`, `npm run storybook:build`, and `npm run validate:template` before handing work off.
+
 ## Component Conventions
 
 - **Prefer Server Components**. Add `'use client'` only when you need:
@@ -184,7 +201,8 @@ MDX documentation pages live in `src/stories/docs/`.
 - Tailwind CSS v4 uses **CSS-first config**. Custom design tokens are CSS custom
   properties in `src/app/globals.css` under `:root` and `.dark`.
 - Dark mode: driven by `next-themes` + the `.dark` class on `<html>`.
-- Do not add a `tailwind.config.ts` for design tokens — use `@theme inline {}` in CSS.
+- Do not add a `tailwind.config.ts` for design tokens — use `@theme` / `@theme inline` in CSS.
+- Prefer semantic spacing and elevation tokens for recurring layout roles instead of repeating raw values.
 
 ## Testing
 
@@ -203,6 +221,8 @@ npm run typecheck    # TypeScript check
 npm run format       # Prettier write
 npm test             # Jest watch
 npm run test:ci      # Jest CI (coverage)
+npm run storybook    # Storybook dev server
+npm run storybook:build  # Static Storybook build
 npm run validate:template  # Verify docs, env contract, module boundaries, and agent context
 npm run db:migrate   # Create + apply migration
 npm run db:studio    # Prisma Studio
@@ -247,3 +267,4 @@ docker compose -f docker/docker-compose.yml up  # Full stack with DB
 - Do not use Zustand stores in Server Components.
 - Do not import `src/modules/auth/auth.ts` (full instance) in `src/proxy.ts`.
 - Do not keep example product screens inside `src/app/`; move them into `src/modules/template/` or a real product module.
+- Do not change shared UI colors, spacing, or shadows in isolation without updating the style-guide surface that documents them.

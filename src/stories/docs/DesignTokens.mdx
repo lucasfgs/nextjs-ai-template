@@ -1,78 +1,176 @@
 import { Meta } from '@storybook/addon-docs/blocks'
+import { PageLead, RuleGrid, TokenGrid } from './docs-components'
 
-<Meta title="Documentation/Design Tokens" />
+<Meta title="Style Guide/Foundations/Design Tokens" />
 
-# Design Tokens
+<PageLead
+  eyebrow="Foundations"
+  title="Design tokens"
+  description="Semantic tokens are the design API for this template. They are defined in `src/app/globals.css`, mapped to Tailwind v4 utilities, and consumed by both the application and Storybook. Update tokens before you reach for hard-coded values in component classes."
+/>
 
-All tokens are CSS custom properties defined in `src/app/globals.css`. They are mapped to Tailwind v4 utilities via `@theme inline {}`.
+## Core surface and action palette
 
-## Colour palette
+<TokenGrid
+  items={[
+    {
+      name: 'Background',
+      variable: '--background',
+      utility: 'bg-background / text-foreground',
+      value: 'Canvas for app shells and pages',
+      description:
+        'Default page background. Use with `text-foreground` for the primary readable text layer.',
+      previewVariable: '--background',
+      previewForegroundVariable: '--foreground',
+    },
+    {
+      name: 'Card',
+      variable: '--card',
+      utility: 'bg-card / text-card-foreground',
+      value: 'Raised surface for panels and structured content',
+      description: 'Preferred surface for settings modules, data summaries, and content sections.',
+      previewVariable: '--card',
+      previewForegroundVariable: '--card-foreground',
+    },
+    {
+      name: 'Popover',
+      variable: '--popover',
+      utility: 'bg-popover / text-popover-foreground',
+      value: 'Transient surface for menus, selects, and tooltips',
+      description: 'Use for floating UI that should read as distinct from the surrounding page.',
+      previewVariable: '--popover',
+      previewForegroundVariable: '--popover-foreground',
+    },
+    {
+      name: 'Primary',
+      variable: '--primary',
+      utility: 'bg-primary / text-primary-foreground',
+      value: 'Main call-to-action color',
+      description:
+        'Reserve for the dominant action on a surface, key highlights, or brand-led emphasis.',
+      previewVariable: '--primary',
+      previewForegroundVariable: '--primary-foreground',
+    },
+    {
+      name: 'Secondary',
+      variable: '--secondary',
+      utility: 'bg-secondary / text-secondary-foreground',
+      value: 'Subtle secondary action surface',
+      description:
+        'Use for supportive actions, pills, and subdued emphasis that should not compete with primary actions.',
+      previewVariable: '--secondary',
+      previewForegroundVariable: '--secondary-foreground',
+    },
+    {
+      name: 'Muted',
+      variable: '--muted',
+      utility: 'bg-muted / text-muted-foreground',
+      value: 'Low-contrast support surface and text',
+      description:
+        'Best for metadata blocks, helper text, placeholders, separators, and quiet backgrounds.',
+      previewVariable: '--muted',
+      previewForegroundVariable: '--muted-foreground',
+    },
+    {
+      name: 'Accent',
+      variable: '--accent',
+      utility: 'bg-accent / text-accent-foreground',
+      value: 'Interactive hover and selected-state surface',
+      description:
+        'Used where a surface needs subtle interaction feedback without becoming the primary action.',
+      previewVariable: '--accent',
+      previewForegroundVariable: '--accent-foreground',
+    },
+    {
+      name: 'Destructive',
+      variable: '--destructive',
+      utility: 'bg-destructive / text-destructive-foreground',
+      value: 'Destructive intent and irreversible actions',
+      description: 'Use sparingly for delete, remove, revoke, or other destructive workflows.',
+      previewVariable: '--destructive',
+      previewForegroundVariable: '--destructive-foreground',
+    },
+  ]}
+/>
 
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', margin: '24px 0' }}>
-  {[
-    ['Background', 'background', 'foreground'],
-    ['Card', 'card', 'card-foreground'],
-    ['Popover', 'popover', 'popover-foreground'],
-    ['Primary', 'primary', 'primary-foreground'],
-    ['Secondary', 'secondary', 'secondary-foreground'],
-    ['Muted', 'muted', 'muted-foreground'],
-    ['Accent', 'accent', 'accent-foreground'],
-    ['Destructive', 'destructive', 'destructive-foreground'],
-  ].map(([name, bg, fg]) => (
-    <div key={name} style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-      <div style={{
-        background: `var(--${bg})`,
-        color: `var(--${fg})`,
-        padding: '20px 16px',
-        fontSize: '14px',
-        fontWeight: '500',
-        minHeight: '64px',
-        display: 'flex',
-        alignItems: 'center',
-      }}>
-        {name}
-      </div>
-      <div style={{ padding: '8px 12px', fontSize: '11px', fontFamily: 'monospace', background: 'var(--muted)', color: 'var(--muted-foreground)' }}>
-        --{bg}
-      </div>
-    </div>
-  ))}
-</div>
+## Status tones
 
-## Border & Focus
+<TokenGrid
+  items={[
+    {
+      name: 'Success',
+      variable: '--success',
+      utility: 'text-success / bg-success',
+      value: 'Positive completion, healthy status, confirmed state',
+      description:
+        'Use alongside icons or copy so success is communicated by more than color alone.',
+      previewVariable: '--success',
+      previewForegroundVariable: '--success-foreground',
+    },
+    {
+      name: 'Warning',
+      variable: '--warning',
+      utility: 'text-warning / bg-warning',
+      value: 'Needs attention, incomplete setup, recoverable risk',
+      description: 'Best for caution states, pending actions, and settings that require review.',
+      previewVariable: '--warning',
+      previewForegroundVariable: '--warning-foreground',
+    },
+    {
+      name: 'Info',
+      variable: '--info',
+      utility: 'text-info / bg-info',
+      value: 'Neutral informational messaging and lightweight guidance',
+      description:
+        'Use for education, inline hints, or feature awareness without implying urgency.',
+      previewVariable: '--info',
+      previewForegroundVariable: '--info-foreground',
+    },
+  ]}
+/>
 
-| Token | CSS Variable | Tailwind class |
-|-------|-------------|----------------|
-| Border | `--border` | `border-border` |
-| Input | `--input` | `border-input` |
-| Focus ring | `--ring` | `ring-ring` |
+## Form and chrome tokens
 
-## Border radius
+| Purpose     | CSS variable | Tailwind utility        | Guidance                                                      |
+| ----------- | ------------ | ----------------------- | ------------------------------------------------------------- |
+| Borders     | `--border`   | `border-border`         | Default outlines for surfaces, separators, and field chrome.  |
+| Inputs      | `--input`    | `border-input`          | Default form field edge treatment.                            |
+| Focus ring  | `--ring`     | `ring-ring`             | Use with visible focus styles on every interactive primitive. |
+| Radius base | `--radius`   | via `rounded-*` aliases | Shared shape contract for all primitives.                     |
 
-| Scale | CSS Variable | Value |
-|-------|-------------|-------|
-| `sm` | `--radius-sm` | `calc(var(--radius) - 4px)` |
-| `md` | `--radius-md` | `calc(var(--radius) - 2px)` |
-| `lg` | `--radius-lg` | `var(--radius)` = `0.5rem` |
-| `xl` | `--radius-xl` | `calc(var(--radius) + 4px)` |
+## Token rules
 
-## Typography
+<RuleGrid
+  items={[
+    {
+      title: 'Prefer semantic utilities',
+      body: 'Write component classes with semantic names like `bg-card`, `text-muted-foreground`, and `border-border` so brand refreshes stay centralized in token definitions.',
+    },
+    {
+      title: 'Pair foreground and background tokens',
+      body: 'When you introduce a new surface token, define and document its readable foreground partner at the same time.',
+    },
+    {
+      title: 'Support both themes',
+      body: 'Every semantic token must be reviewed in both `:root` and `.dark` so dark mode is not an afterthought.',
+    },
+    {
+      title: 'Document scope changes',
+      body: 'If you add or rename tokens, update the relevant Storybook docs page and repo-facing docs in the same change.',
+    },
+  ]}
+/>
 
-| Property | CSS Variable | Value |
-|----------|-------------|-------|
-| Sans font | `--font-sans` → `--font-geist-sans` | Geist |
-| Mono font | `--font-mono` → `--font-geist-mono` | Geist Mono |
-
-## Customising tokens
-
-Override any token inside a scoped CSS selector to white-label a section:
+## Branding override pattern
 
 ```css
-/* Tenant-specific overrides */
 .brand-acme {
   --primary: #1d4ed8;
   --primary-foreground: #ffffff;
+  --ring: #1d4ed8;
 }
 ```
 
-All components that use `bg-primary` / `text-primary-foreground` will automatically reflect the change.
+Scope overrides to a wrapper when you need tenant or campaign-specific branding. Because the
+components consume semantic tokens instead of raw color values, the UI will inherit the new brand
+without rewriting button, badge, input, or dialog classes.
