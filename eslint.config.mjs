@@ -6,7 +6,7 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}', '__tests__/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -22,20 +22,12 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-  {
-    files: ['__tests__/**/*.{ts,tsx}'],
-    rules: {
-      // Unit tests are allowed to target internal module files directly.
-      'no-restricted-imports': 'off',
-    },
-  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
     '.next/**',
     'out/**',
     'build/**',
-    'coverage/**',
     'next-env.d.ts',
   ]),
 ])

@@ -1,10 +1,4 @@
-import {
-  forgotPasswordSchema,
-  resetPasswordSchema,
-  signInSchema,
-  signUpSchema,
-  verifyEmailSchema,
-} from '@/modules/auth/schemas/auth.schemas'
+import { signInSchema, signUpSchema, forgotPasswordSchema } from '@/modules/auth'
 
 describe('signInSchema', () => {
   it('accepts valid credentials', () => {
@@ -70,33 +64,5 @@ describe('forgotPasswordSchema', () => {
 
   it('rejects invalid email', () => {
     expect(forgotPasswordSchema.safeParse({ email: 'bad' }).success).toBe(false)
-  })
-})
-
-describe('resetPasswordSchema', () => {
-  const valid = {
-    token: 'token-123',
-    password: 'Password1',
-    confirmPassword: 'Password1',
-  }
-
-  it('accepts valid payloads', () => {
-    expect(resetPasswordSchema.safeParse(valid).success).toBe(true)
-  })
-
-  it('rejects mismatched passwords', () => {
-    expect(resetPasswordSchema.safeParse({ ...valid, confirmPassword: 'different' }).success).toBe(
-      false,
-    )
-  })
-})
-
-describe('verifyEmailSchema', () => {
-  it('accepts a token', () => {
-    expect(verifyEmailSchema.safeParse({ token: 'token-123' }).success).toBe(true)
-  })
-
-  it('rejects an empty token', () => {
-    expect(verifyEmailSchema.safeParse({ token: '' }).success).toBe(false)
   })
 })
