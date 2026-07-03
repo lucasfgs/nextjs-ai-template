@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/modules/auth'
-import { billingService, createCheckoutSessionSchema } from '@/modules/billing'
+import { billingService, createCheckoutSessionSchema, isStripeConfigured } from '@/modules/billing'
 
 async function readCheckoutPayload(req: Request) {
   const contentType = req.headers.get('content-type') ?? ''
@@ -15,6 +15,13 @@ async function readCheckoutPayload(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    if (!isStripeConfigured()) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured for this environment' },
+        { status: 503 },
+      )
+    }
+
     const session = await auth()
     if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -28,7 +35,8 @@ export async function POST(req: Request) {
     }
 
     const url = await billingService.createCheckoutSession(session.user.id, parsed.data.plan)
-    if (!url) return NextResponse.json({ error: 'Unable to create checkout session' }, { status: 500 })
+    if (!url)
+      return NextResponse.json({ error: 'Unable to create checkout session' }, { status: 500 })
 
     return NextResponse.redirect(url, { status: 303 })
   } catch (error) {

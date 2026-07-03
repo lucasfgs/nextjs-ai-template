@@ -3,6 +3,10 @@ import { env } from '@/env'
 
 let stripeClient: Stripe | null = null
 
+export function isStripeConfigured() {
+  return Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_PREMIUM_PRICE_ID && env.STRIPE_PRO_PRICE_ID)
+}
+
 export function getStripeClient() {
   if (!env.STRIPE_SECRET_KEY) {
     throw new Error('STRIPE_SECRET_KEY is not configured')

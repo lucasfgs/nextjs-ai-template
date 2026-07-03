@@ -23,6 +23,10 @@ export const APP_CONFIG = {
   URL: env.NEXT_PUBLIC_APP_URL,
 } as const
 
+export const DASHBOARD_APPEARANCE = {
+  DEFAULT_PRESET: 'signal',
+} as const
+
 export const AUTH_COOKIE_NAME = 'authjs.session-token'
 
 export const TOKEN_EXPIRY = {

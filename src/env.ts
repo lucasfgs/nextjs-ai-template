@@ -1,20 +1,31 @@
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
+const optionalNonEmptyString = () =>
+  z.preprocess((value) => {
+    if (typeof value !== 'string') return value
+    const trimmed = value.trim()
+    return trimmed.length === 0 ? undefined : trimmed
+  }, z.string().min(1).optional())
+
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
     AUTH_SECRET: z.string().min(32),
-    AUTH_GOOGLE_ID: z.string().optional(),
-    AUTH_GOOGLE_SECRET: z.string().optional(),
-    AUTH_GITHUB_ID: z.string().optional(),
-    AUTH_GITHUB_SECRET: z.string().optional(),
-    RESEND_API_KEY: z.string().optional(),
-    RESEND_FROM_EMAIL: z.string().email().optional(),
-    STRIPE_SECRET_KEY: z.string().min(1).optional(),
-    STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
-    STRIPE_PREMIUM_PRICE_ID: z.string().min(1).optional(),
-    STRIPE_PRO_PRICE_ID: z.string().min(1).optional(),
+    AUTH_GOOGLE_ID: optionalNonEmptyString(),
+    AUTH_GOOGLE_SECRET: optionalNonEmptyString(),
+    AUTH_GITHUB_ID: optionalNonEmptyString(),
+    AUTH_GITHUB_SECRET: optionalNonEmptyString(),
+    RESEND_API_KEY: optionalNonEmptyString(),
+    RESEND_FROM_EMAIL: z.preprocess((value) => {
+      if (typeof value !== 'string') return value
+      const trimmed = value.trim()
+      return trimmed.length === 0 ? undefined : trimmed
+    }, z.string().email().optional()),
+    STRIPE_SECRET_KEY: optionalNonEmptyString(),
+    STRIPE_WEBHOOK_SECRET: optionalNonEmptyString(),
+    STRIPE_PREMIUM_PRICE_ID: optionalNonEmptyString(),
+    STRIPE_PRO_PRICE_ID: optionalNonEmptyString(),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   },
   client: {
