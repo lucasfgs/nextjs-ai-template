@@ -3,6 +3,7 @@
 This file provides context for AI assistants working in this codebase.
 Read this before making changes. Keep it updated as the project evolves.
 Machine-readable companion context lives in `.agent-platform/`.
+Top-level agent instructions live in `AGENTS.md` and must also be followed.
 
 ## Project Overview
 
@@ -44,7 +45,7 @@ src/
   providers/     — React context providers composed into root layout.
   hooks/         — Global shared React hooks.
   env.ts         — Single source of truth for all environment variables.
-  proxy.ts       — Edge-safe auth guards + redirects (imports auth config only).
+  proxy.ts       — Next.js Proxy for locale rewriting and optimistic auth redirects.
   stories/
     docs/        — Storybook MDX style-guide docs and docs-only helper components.
 ```
@@ -75,7 +76,7 @@ client-safe auth subpath.
 
 ## Auth Architecture — CRITICAL
 
-Auth.js v5 uses a split-config pattern to support Edge Runtime in middleware:
+Auth.js v5 uses a split-config pattern to support Edge Runtime in Next.js Proxy:
 
 - `src/modules/auth/auth.config.ts` — providers + callbacks, **NO Prisma import**.
   This is Edge-safe and re-exported through `src/modules/auth/edge.ts`.
@@ -86,6 +87,8 @@ Auth.js v5 uses a split-config pattern to support Edge Runtime in middleware:
 - `src/proxy.ts` — imports `@/modules/auth/edge` ONLY.
 
 Violating this pattern causes: `PrismaClient is not supported in Edge Runtime`.
+Dashboard layouts and pages still perform server-side session checks; Proxy is
+only an optimistic request-time redirect layer, not the sole authorization gate.
 
 ## Server Actions Pattern
 

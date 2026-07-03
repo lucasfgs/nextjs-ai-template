@@ -34,6 +34,76 @@ function parseRuntimeEnvKeys(envSource) {
   )
 }
 
+function parseJson(relativePath) {
+  return JSON.parse(read(relativePath))
+}
+
+function routePathFromAppFile(relativePath) {
+  const normalized = relativePath.replaceAll(path.sep, '/')
+  const withoutPrefix = normalized
+    .replace(/^src\/app\//, '')
+    .replace(/(^|\/)(?:page|route)\.tsx?$/, '')
+
+  const segments = withoutPrefix
+    .split('/')
+    .filter((segment) => segment && !/^\(.+\)$/.test(segment))
+
+  return `/${segments.join('/')}`.replace(/\/$/, '') || '/'
+}
+
+function collectAppRoutes() {
+  const routes = {
+    publicRoutes: [],
+    protectedRoutes: [],
+    apiRoutes: [],
+  }
+
+  function walk(directory) {
+    for (const entry of readdirSync(directory)) {
+      const fullPath = path.join(directory, entry)
+      const relativePath = path.relative(root, fullPath)
+
+      if (statSync(fullPath).isDirectory()) {
+        walk(fullPath)
+        continue
+      }
+
+      if (!/(^|\/)(page|route)\.tsx?$/.test(relativePath.replaceAll(path.sep, '/'))) {
+        continue
+      }
+
+      const routePath = routePathFromAppFile(relativePath)
+      if (routePath.startsWith('/api/')) {
+        routes.apiRoutes.push(routePath)
+      } else if (routePath === '/dashboard' || routePath.startsWith('/settings')) {
+        routes.protectedRoutes.push(routePath)
+      } else {
+        routes.publicRoutes.push(routePath)
+      }
+    }
+  }
+
+  walk(path.join(root, 'src/app'))
+
+  return Object.fromEntries(
+    Object.entries(routes).map(([key, values]) => [key, [...new Set(values)].sort()]),
+  )
+}
+
+function assertSameStringSet(actual, expected, message) {
+  const actualSet = new Set(actual)
+  const expectedSet = new Set(expected)
+  const missing = expected.filter((value) => !actualSet.has(value))
+  const extra = actual.filter((value) => !expectedSet.has(value))
+
+  assert(
+    missing.length === 0 && extra.length === 0,
+    `${message}${missing.length ? ` Missing: ${missing.join(', ')}.` : ''}${
+      extra.length ? ` Extra: ${extra.join(', ')}.` : ''
+    }`,
+  )
+}
+
 const requiredAgentFiles = [
   '.agent-platform/manifest.json',
   '.agent-platform/project-context.json',
@@ -55,6 +125,15 @@ for (const file of requiredAgentFiles) {
   }
 }
 
+const manifest = parseJson('.agent-platform/manifest.json')
+for (const [name, relativeTarget] of Object.entries(manifest.entrypoints ?? {})) {
+  const target = path.join(root, '.agent-platform', relativeTarget)
+  assert(
+    existsSync(target),
+    `.agent-platform manifest entrypoint "${name}" points to a missing file.`,
+  )
+}
+
 const envKeys = parseRuntimeEnvKeys(read('src/env.ts'))
 const envExampleKeys = parseEnvExampleKeys(read('.env.example'))
 for (const key of envKeys) {
@@ -73,8 +152,29 @@ for (const entry of readdirSync(moduleRoot)) {
 
 const readme = read('README.md')
 const claude = read('CLAUDE.md')
+const agents = read('AGENTS.md')
 assert(readme.includes('.agent-platform/'), 'README.md must reference .agent-platform/.')
 assert(claude.includes('.agent-platform/'), 'CLAUDE.md must reference .agent-platform/.')
+assert(claude.includes('AGENTS.md'), 'CLAUDE.md must reference AGENTS.md.')
+assert(
+  agents.includes('node_modules/next/dist/docs/'),
+  'AGENTS.md must point agents to the bundled Next.js docs.',
+)
+assert(agents.includes('.agent-platform/'), 'AGENTS.md must reference .agent-platform/.')
+
+for (const key of envKeys) {
+  assert(readme.includes(key), `README.md environment documentation is missing ${key}`)
+}
+
+const routeMap = parseJson('.agent-platform/route-map.json')
+const actualRoutes = collectAppRoutes()
+for (const key of ['publicRoutes', 'protectedRoutes', 'apiRoutes']) {
+  assertSameStringSet(
+    routeMap[key] ?? [],
+    actualRoutes[key] ?? [],
+    `.agent-platform/route-map.json ${key} is out of sync with src/app.`,
+  )
+}
 
 const proxySource = read('src/proxy.ts')
 assert(

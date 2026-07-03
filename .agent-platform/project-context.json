@@ -27,6 +27,12 @@
     "preferServerComponents": true,
     "envAccess": "Use env from src/env.ts in application code.",
     "moduleImports": "Import modules through public entrypoints only.",
-    "routeLogic": "Keep business logic out of src/app."
+    "routeLogic": "Keep business logic out of src/app.",
+    "nextDocs": "Before framework-specific changes, read the relevant bundled Next.js docs under node_modules/next/dist/docs/.",
+    "authProtection": "Proxy performs optimistic redirects; protected layouts and pages must still call auth() before reading user data."
+  },
+  "validation": {
+    "requiredCommand": "npm run validate:template",
+    "recommendedCommands": ["npm run lint", "npm run typecheck", "npm run test:ci"]
   }
 }

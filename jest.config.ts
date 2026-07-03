@@ -34,10 +34,12 @@ const config: Config = {
 // which takes priority and blocks the custom exclusion below. Wrapping in an
 // async function lets us override it after Next.js sets its defaults.
 // @t3-oss packages are pure ESM that only need CJS transformation (no Web APIs).
-export default async () => {
+const createResolvedJestConfig = async () => {
   const resolved = await createJestConfig(config)()
   return {
     ...resolved,
     transformIgnorePatterns: ['node_modules/(?!(@t3-oss/env-nextjs|@t3-oss/env-core)/)'],
   }
 }
+
+export default createResolvedJestConfig
