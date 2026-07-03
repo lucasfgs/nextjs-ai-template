@@ -14,6 +14,6 @@
   ],
   "notes": [
     "Use relative imports within a module.",
-    "Middleware must not import the full Auth.js instance."
+    "Next.js Proxy must not import the full Auth.js instance."
   ]
 }

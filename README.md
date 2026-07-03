@@ -150,6 +150,11 @@ Required variables live in `src/env.ts` and must be mirrored in `.env.example`.
 - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — optional GitHub OAuth
 - `RESEND_API_KEY` — optional email sending key
 - `RESEND_FROM_EMAIL` — optional email sender address
+- `STRIPE_SECRET_KEY` — optional Stripe secret key for billing flows
+- `STRIPE_WEBHOOK_SECRET` — optional Stripe webhook signing secret
+- `STRIPE_PREMIUM_PRICE_ID` — optional Stripe price ID for the premium plan
+- `STRIPE_PRO_PRICE_ID` — optional Stripe price ID for the pro plan
+- `NODE_ENV` — runtime environment, usually managed by Next.js or the host
 
 ### Client
 
@@ -162,6 +167,8 @@ Required variables live in `src/env.ts` and must be mirrored in `.env.example`.
 - `src/modules/auth/auth.ts` contains the full NextAuth instance.
 - Protected pages live under `(dashboard)` and `settings` is guarded in middleware.
 - `src/proxy.ts` should import `@/modules/auth/edge`, not internal auth files.
+- Proxy provides optimistic redirects only; protected layouts and pages must
+  keep server-side `auth()` checks before reading user data.
 
 ## Email flow
 
@@ -212,6 +219,8 @@ npm run validate:template
 ## Notes for AI agents
 
 - Keep business logic out of `src/app/`.
+- Read the relevant installed Next.js docs in `node_modules/next/dist/docs/`
+  before changing framework-specific code.
 - Import feature internals through module barrels only. The allowed auth subpaths are `@/modules/auth/edge` for proxy and `@/modules/auth/client` for Client Components.
 - Use `env` for configuration and `APP_CONFIG` for product metadata.
 - Prefer Server Components unless client state is required.
