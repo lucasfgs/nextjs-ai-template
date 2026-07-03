@@ -81,7 +81,7 @@ function MiniTrendChart({
   const area = `${points} ${width},${height} 0,${height}`
 
   return (
-    <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/90 p-4 text-white shadow-[0_24px_80px_-32px_rgba(15,23,42,0.9)]">
+    <div className="rounded-[1.9rem] border border-white/10 bg-slate-950/88 p-4 text-white shadow-[0_24px_80px_-32px_rgba(15,23,42,0.9)]">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <p className="text-xs tracking-[0.28em] text-slate-400 uppercase">{eyebrow}</p>
@@ -149,7 +149,7 @@ function RadialGauge({
   const dashOffset = circumference * (1 - value / 100)
 
   return (
-    <div className="bg-background/80 flex items-center gap-4 rounded-2xl border p-4">
+    <div className="dashboard-inset flex items-center gap-4 rounded-[1.6rem] p-4">
       <div className="relative h-24 w-24">
         <svg className="h-24 w-24 -rotate-90" viewBox="0 0 120 120">
           <circle
@@ -175,7 +175,7 @@ function RadialGauge({
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-semibold">{value}%</span>
+          <span className="text-2xl font-semibold tracking-[-0.03em]">{value}%</span>
           <span className="text-muted-foreground text-[11px] tracking-[0.22em] uppercase">
             {readyLabel}
           </span>
@@ -376,16 +376,13 @@ export async function TemplateDashboardOverview({
   ]
 
   return (
-    <div className="space-y-6">
-      <Card className="border-border/70 from-background via-background overflow-hidden bg-gradient-to-br to-slate-50 shadow-[0_28px_80px_-42px_rgba(15,23,42,0.35)] dark:to-slate-950">
+    <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-6">
+      <Card className="dashboard-panel-strong dashboard-hero overflow-hidden rounded-[2rem] border-0">
         <CardContent className="p-0">
           <div className="grid gap-0 xl:grid-cols-[minmax(0,1.25fr)_420px]">
             <div className="space-y-8 p-6 sm:p-8">
               <div className="flex flex-wrap items-center gap-3">
-                <Badge
-                  variant="secondary"
-                  className="rounded-full border border-sky-200/70 bg-sky-50 px-3 py-1 text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200"
-                >
+                <Badge variant="secondary" className="dashboard-chip rounded-full px-3 py-1">
                   {messages.template.dashboard.executiveOverview}
                 </Badge>
                 <Badge
@@ -393,8 +390,8 @@ export async function TemplateDashboardOverview({
                   className={cn(
                     'rounded-full px-3 py-1',
                     user.emailVerified
-                      ? 'border-emerald-500/25 bg-emerald-500/8 text-emerald-700 dark:text-emerald-300'
-                      : 'border-amber-500/25 bg-amber-500/8 text-amber-700 dark:text-amber-300',
+                      ? 'dashboard-chip-secondary'
+                      : 'border-amber-500/25 bg-amber-500/[0.08] text-amber-700 dark:text-amber-300',
                   )}
                 >
                   {user.emailVerified
@@ -405,14 +402,12 @@ export async function TemplateDashboardOverview({
 
               <div className="max-w-3xl space-y-4">
                 <div className="space-y-3">
-                  <p className="text-muted-foreground text-xs font-medium tracking-[0.3em] uppercase">
-                    {messages.template.dashboard.workspaceStatus}
-                  </p>
+                  <p className="dashboard-kicker">{messages.template.dashboard.workspaceStatus}</p>
                   <h1 className="max-w-2xl text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">
                     {interpolate(messages.template.dashboard.welcomeBack, { name: firstName })}
                   </h1>
                 </div>
-                <p className="text-muted-foreground max-w-2xl text-base leading-8">
+                <p className="max-w-2xl text-base leading-8 text-[color:color-mix(in_srgb,var(--dashboard-shell-foreground)_72%,transparent)]">
                   {setupProgress === 100
                     ? messages.template.dashboard.completionMessage
                     : messages.template.dashboard.inProgressMessage}
@@ -424,39 +419,40 @@ export async function TemplateDashboardOverview({
                   const Icon = kpi.icon
 
                   return (
-                    <div
-                      key={kpi.label}
-                      className="border-border/70 bg-background/80 rounded-[1.5rem] border p-4 shadow-sm backdrop-blur"
-                    >
+                    <div key={kpi.label} className="dashboard-inset rounded-[1.6rem] p-4">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-muted-foreground text-xs tracking-[0.24em] uppercase">
-                          {kpi.label}
-                        </p>
-                        <span className="bg-muted/70 flex h-9 w-9 items-center justify-center rounded-full border">
+                        <p className="dashboard-kicker">{kpi.label}</p>
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/10">
                           <Icon className="h-4 w-4" />
                         </span>
                       </div>
                       <p className="mt-5 text-2xl font-semibold tracking-tight">{kpi.value}</p>
-                      <p className="text-muted-foreground mt-1 text-sm">{kpi.note}</p>
+                      <p className="mt-1 text-sm text-[color:color-mix(in_srgb,var(--dashboard-shell-foreground)_64%,transparent)]">
+                        {kpi.note}
+                      </p>
                     </div>
                   )
                 })}
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button asChild className="rounded-full px-5">
+                <Button asChild className="rounded-full border-0 px-5">
                   <Link href={primaryAction.href}>
                     {primaryAction.label}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="rounded-full px-5">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/[0.12] bg-white/[0.06] px-5 hover:bg-white/[0.12]"
+                >
                   <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
                 </Button>
               </div>
             </div>
 
-            <div className="border-border/60 border-t bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.18),_transparent_42%),linear-gradient(180deg,rgba(15,23,42,0.02),rgba(15,23,42,0.08))] p-6 sm:p-8 xl:border-t-0 xl:border-l">
+            <div className="border-t border-white/10 bg-[radial-gradient(circle_at_top,_rgba(15,118,110,0.24),_transparent_42%),linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0.16))] p-6 sm:p-8 xl:border-t-0 xl:border-l">
               <MiniTrendChart
                 values={trendValues}
                 eyebrow={messages.template.dashboard.trend.eyebrow}
@@ -470,7 +466,7 @@ export async function TemplateDashboardOverview({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_380px]">
         <div className="space-y-6">
-          <Card className="border-border/70 shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]">
+          <Card className="dashboard-panel rounded-[2rem] border-0">
             <CardHeader className="pb-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-1">
@@ -481,7 +477,7 @@ export async function TemplateDashboardOverview({
                     {messages.template.dashboard.readiness.description}
                   </CardDescription>
                 </div>
-                <div className="rounded-full border px-3 py-1 text-sm font-medium">
+                <div className="dashboard-chip rounded-full px-3 py-1 text-sm font-medium">
                   {interpolate(messages.template.dashboard.readiness.completed, {
                     completed: completedSetupSteps,
                     total: setupChecklist.length,
@@ -505,7 +501,7 @@ export async function TemplateDashboardOverview({
                   {setupChecklist.map((step) => (
                     <div
                       key={step.label}
-                      className="border-border/70 bg-muted/20 flex items-start gap-4 rounded-2xl border px-4 py-4"
+                      className="dashboard-inset flex items-start gap-4 rounded-[1.4rem] px-4 py-4"
                     >
                       <span
                         className={cn(
@@ -546,7 +542,7 @@ export async function TemplateDashboardOverview({
             </CardContent>
           </Card>
 
-          <Card className="border-border/70 shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]">
+          <Card className="dashboard-panel rounded-[2rem] border-0">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -588,7 +584,7 @@ export async function TemplateDashboardOverview({
                     <span className="font-medium">{metric.label}</span>
                     <span className="text-muted-foreground">{metric.value}%</span>
                   </div>
-                  <div className="bg-muted h-2.5 overflow-hidden rounded-full">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-white/[0.08]">
                     <div
                       className={cn('h-full rounded-full', metric.tone)}
                       style={{ width: `${metric.value}%` }}
@@ -601,7 +597,7 @@ export async function TemplateDashboardOverview({
         </div>
 
         <div className="space-y-6">
-          <Card className="border-border/70 shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]">
+          <Card className="dashboard-panel rounded-[2rem] border-0">
             <CardHeader className="pb-4">
               <CardTitle className="text-[1.5rem] tracking-tight">
                 {messages.template.dashboard.priorityQueue.title}
@@ -615,12 +611,9 @@ export async function TemplateDashboardOverview({
                 const Icon = item.icon
 
                 return (
-                  <div
-                    key={item.title}
-                    className="border-border/70 bg-muted/20 rounded-2xl border p-4"
-                  >
+                  <div key={item.title} className="dashboard-inset rounded-[1.4rem] p-4">
                     <div className="flex items-start gap-3">
-                      <span className="bg-background flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border">
+                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10">
                         <Icon className="h-4 w-4" />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -656,7 +649,7 @@ export async function TemplateDashboardOverview({
             </CardContent>
           </Card>
 
-          <Card className="border-border/70 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.95)]">
+          <Card className="rounded-[2rem] border-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.95)]">
             <CardHeader className="pb-4">
               <CardTitle className="text-[1.45rem] tracking-tight text-white">
                 {messages.template.dashboard.snapshot.title}

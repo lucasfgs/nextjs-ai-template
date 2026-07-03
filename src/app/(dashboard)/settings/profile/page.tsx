@@ -19,12 +19,17 @@ export default async function ProfileSettingsPage() {
   if (!user) redirect(getLocalizedPathname(locale, ROUTES.SIGN_IN))
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{messages.profile.page.title}</h1>
-        <p className="text-muted-foreground">{messages.profile.page.description}</p>
+    <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-6">
+      <div className="dashboard-panel-strong rounded-[2rem] p-6 sm:p-8">
+        <p className="dashboard-kicker">Profile controls</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em]">
+          {messages.profile.page.title}
+        </h1>
+        <p className="mt-3 text-base leading-8 text-[color:color-mix(in_srgb,var(--dashboard-shell-foreground)_68%,transparent)]">
+          {messages.profile.page.description}
+        </p>
       </div>
-      <div className="max-w-md">
+      <div className="dashboard-panel w-full max-w-xl rounded-[2rem] p-6">
         <ProfileForm user={user} />
       </div>
     </div>
